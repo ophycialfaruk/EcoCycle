@@ -9,39 +9,52 @@ const app = express();
 const PORT = process.env.PORT || 3000;
 const DATA_FILE = path.join(__dirname, 'progress.json');
 
+// Middleware
 app.use(bodyParser.json());
 app.use(express.static(path.join(__dirname, 'public')));
 
-// ensure file exists with correct structure
+// Ensure progress.json exists
 if (!fs.existsSync(DATA_FILE)) {
-  fs.writeFileSync(
-    DATA_FILE,
-    JSON.stringify({ users: {}, requests: [], feedback: [], admin: { email: "admin@ecocycle.com", password: "admin" } }, null, 2)
-  );
+  const initData = {
+    users: {},
+    requests: [],
+    feedback: [],
+    admin: { email: "admin@ecocycle.com", password: "admin" }
+  };
+  fs.writeFileSync(DATA_FILE, JSON.stringify(initData, null, 2), 'utf8');
 }
 
+// Helpers
 function readData() {
-  return JSON.parse(fs.readFileSync(DATA_FILE, 'utf8'));
+  try {
+    return JSON.parse(fs.readFileSync(DATA_FILE, 'utf8'));
+  } catch (err) {
+    console.error('Error reading progress.json:', err);
+    return { users: {}, requests: [], feedback: [], admin: {} };
+  }
 }
 function writeData(data) {
-  fs.writeFileSync(DATA_FILE, JSON.stringify(data, null, 2));
+  fs.writeFileSync(DATA_FILE, JSON.stringify(data, null, 2), 'utf8');
 }
 
-// USER: Register
+// -------------------- USER ROUTES --------------------
+// Register
 app.post('/api/user/register', (req, res) => {
   const { name, email, password, address, state, country, contact } = req.body;
   if (!name || !email || !password || !address || !state || !country || !contact)
     return res.status(400).json({ error: "All fields required" });
+  
   const data = readData();
   if (Object.values(data.users).some(u => u.email === email))
     return res.status(400).json({ error: "Email already registered" });
+  
   const id = nanoid(6);
   data.users[id] = { id, name, email, password, address, state, country, contact };
   writeData(data);
   res.json({ message: "Registered successfully", id });
 });
 
-// USER: Login
+// Login
 app.post('/api/user/login', (req, res) => {
   const { email, password } = req.body;
   const data = readData();
@@ -50,20 +63,24 @@ app.post('/api/user/login', (req, res) => {
   res.json(user);
 });
 
-// USER: Submit Waste Request
+// Submit Waste Request
 app.post('/api/user/request', (req, res) => {
   const { userId, type, kg } = req.body;
   if (!userId || !type || kg == null) return res.status(400).json({ error: "Missing data" });
   const data = readData();
   const user = data.users[userId];
   if (!user) return res.status(404).json({ error: "User not found" });
-  const request = { id: nanoid(6), userId, type, kg, status: "pending", amount: 0, date: new Date().toLocaleDateString(), accomplished: false };
+
+  const request = { 
+    id: nanoid(6), userId, type, kg, status: "pending", 
+    amount: 0, date: new Date().toLocaleDateString(), accomplished: false 
+  };
   data.requests.push(request);
   writeData(data);
   res.json(request);
 });
 
-// USER: Feedback
+// Feedback
 app.post('/api/user/feedback', (req, res) => {
   const { userId, text } = req.body;
   if (!userId || !text) return res.status(400).json({ error: "Missing feedback" });
@@ -73,52 +90,42 @@ app.post('/api/user/feedback', (req, res) => {
   res.json({ message: "Feedback submitted" });
 });
 
-// USER: Get Requests (for a single user)
+// Get user's requests
 app.get('/api/user/requests/:userId', (req, res) => {
   const data = readData();
   const requests = data.requests.filter(r => r.userId === req.params.userId);
   res.json(requests);
 });
 
-// USER: Get user's feedback (with admin replies)
+// Get user's feedback
 app.get('/api/user/feedback/:userId', (req, res) => {
   const data = readData();
   const feedbacks = data.feedback.filter(f => f.userId === req.params.userId);
   res.json(feedbacks);
 });
 
-// ADMIN: Get all requests
-app.get('/api/admin/requests', (req, res) => {
-  const data = readData();
-  res.json(data.requests);
-});
+// -------------------- ADMIN ROUTES --------------------
+// Get all requests
+app.get('/api/admin/requests', (req, res) => res.json(readData().requests));
 
-// ADMIN: Get all feedback
-app.get('/api/admin/feedback', (req, res) => {
-  const data = readData();
-  res.json(data.feedback);
-});
+// Get all feedback
+app.get('/api/admin/feedback', (req, res) => res.json(readData().feedback));
 
-// ADMIN: Reply to feedback
+// Reply to feedback
 app.post('/api/admin/feedback/reply', (req, res) => {
   const { feedbackId, reply } = req.body;
   if (!feedbackId || !reply) return res.status(400).json({ error: "Missing data" });
 
   const data = readData();
-  const feedbackItem = data.feedback.find(f => f.id === feedbackId);
-  if (!feedbackItem) return res.status(404).json({ error: "Feedback not found" });
+  const fb = data.feedback.find(f => f.id === feedbackId);
+  if (!fb) return res.status(404).json({ error: "Feedback not found" });
 
-  feedbackItem.reply = reply; // store reply
+  fb.reply = reply;
   writeData(data);
-  res.json({ message: "Reply saved", feedback: feedbackItem });
+  res.json({ message: "Reply saved", feedback: fb });
 });
 
-/**
- * ADMIN: Update request
- * Accepts: { requestId, status?, amount?, accomplished? }
- * - If `status` === 'approved' and `amount` provided -> set amount
- * - If `accomplished` is provided -> set accomplished (boolean)
- */
+// Update request
 app.post('/api/admin/request/update', (req, res) => {
   const { requestId, status, amount, accomplished } = req.body;
   const data = readData();
@@ -128,62 +135,45 @@ app.post('/api/admin/request/update', (req, res) => {
   if (status) {
     reqItem.status = status;
     if (status === "approved" && amount != null) reqItem.amount = amount;
-    if (status !== "approved" && status !== "pending" && status !== "declined") {
-      // keep it flexible but normalise common statuses
-      reqItem.status = status;
-    }
   }
-
-  if (accomplished !== undefined) {
-    reqItem.accomplished = !!accomplished;
-  }
+  if (accomplished !== undefined) reqItem.accomplished = !!accomplished;
 
   writeData(data);
   res.json(reqItem);
 });
 
-// ADMIN: Get all users
-app.get('/api/admin/users', (req, res) => {
-  const data = readData();
-  res.json(data.users || {});
-});
+// Get all users
+app.get('/api/admin/users', (req, res) => res.json(readData().users));
 
-// ADMIN: Delete user
+// Delete user
 app.post('/api/admin/user/delete', (req, res) => {
   const { userId } = req.body;
   const data = readData();
   if (!data.users[userId]) return res.status(404).json({ error: "User not found" });
   delete data.users[userId];
-  // optionally remove their requests & feedback
   data.requests = data.requests.filter(r => r.userId !== userId);
   data.feedback = data.feedback.filter(f => f.userId !== userId);
   writeData(data);
   res.json({ message: "User deleted" });
 });
 
-// ADMIN: Update user details
+// Update user
 app.post('/api/admin/user/update', (req, res) => {
   const { userId, updates } = req.body;
   const data = readData();
   const user = data.users[userId];
   if (!user) return res.status(404).json({ error: "User not found" });
-  // apply allowed updates (don't allow changes to id/email/password unless intentionally)
   const allowed = ['name', 'contact', 'address', 'state', 'country'];
-  allowed.forEach(k => {
-    if (updates[k] !== undefined) user[k] = updates[k];
-  });
+  allowed.forEach(k => { if (updates[k] !== undefined) user[k] = updates[k]; });
   writeData(data);
   res.json({ message: "User updated", user });
 });
 
-// Catch-all for other API routes -> helpful for debugging
-app.use('/api/*', (req, res) => {
-  res.status(404).json({ error: "API endpoint not found" });
-});
+// Catch-all API 404
+app.use('/api/*', (req, res) => res.status(404).json({ error: "API endpoint not found" }));
 
-// Serve index by default (if you want root to return public/index.html)
-app.get('/', (req, res) => {
-  res.sendFile(path.join(__dirname, 'public', 'index.html'));
-});
+// Serve index.html
+app.get('/', (req, res) => res.sendFile(path.join(__dirname, 'public', 'index.html')));
 
-app.listen(PORT, () => console.log(`EcoCycle running at http://localhost:${PORT}`));
+// Start server
+app.listen(PORT, () => console.log(`EcoCycle running at port ${PORT}`));
