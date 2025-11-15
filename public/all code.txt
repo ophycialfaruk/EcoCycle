@@ -1,0 +1,1891 @@
+DONT SPOIL JUST FIXED    hre my my code  server.js const express = require('express');
+const bodyParser = require('body-parser');
+const fs = require('fs');
+const path = require('path');
+const { nanoid } = require('nanoid');
+
+const app = express();
+const PORT = 3000;
+const DATA_FILE = path.join(__dirname, 'progress.json');
+
+app.use(bodyParser.json());
+app.use(express.static(path.join(__dirname, 'public')));
+
+// ensure file exists
+if(!fs.existsSync(DATA_FILE)){
+    fs.writeFileSync(DATA_FILE, JSON.stringify({ users: {}, requests: [], feedback: [] }, null, 2));
+}
+
+function readData(){ return JSON.parse(fs.readFileSync(DATA_FILE,'utf8')); }
+function writeData(data){ fs.writeFileSync(DATA_FILE, JSON.stringify(data,null,2)); }
+
+// USER: Register
+app.post('/api/user/register', (req,res)=>{
+    const { name, email, password, address, state, country, contact } = req.body;
+    if(!name||!email||!password||!address||!state||!country||!contact)
+        return res.status(400).json({error:"All fields required"});
+    const data = readData();
+    if(Object.values(data.users).some(u=>u.email===email))
+        return res.status(400).json({error:"Email already registered"});
+    const id = nanoid(6);
+    data.users[id] = { id,name,email,password,address,state,country,contact };
+    writeData(data);
+    res.json({ message:"Registered successfully", id });
+});
+
+// USER: Login
+app.post('/api/user/login', (req,res)=>{
+    const { email, password } = req.body;
+    const data = readData();
+    const user = Object.values(data.users).find(u=>u.email===email && u.password===password);
+    if(!user) return res.status(400).json({error:"Invalid credentials"});
+    res.json(user);
+});
+
+// USER: Submit Waste Request
+app.post('/api/user/request', (req,res)=>{
+    const { userId, type, kg } = req.body;
+    if(!userId||!type||!kg) return res.status(400).json({error:"Missing data"});
+    const data = readData();
+    const user = data.users[userId];
+    if(!user) return res.status(404).json({error:"User not found"});
+    const request = { id:nanoid(6), userId, type, kg, status:"pending", amount:0, date:new Date().toLocaleDateString() };
+    data.requests.push(request);
+    writeData(data);
+    res.json(request);
+});
+
+// USER: Feedback
+app.post('/api/user/feedback', (req,res)=>{
+    const { userId, text } = req.body;
+    if(!userId||!text) return res.status(400).json({error:"Missing feedback"});
+    const data = readData();
+    data.feedback.push({ id:nanoid(6), userId, text, date:new Date().toLocaleDateString() });
+    writeData(data);
+    res.json({ message:"Feedback submitted" });
+});
+
+// USER: Get Requests
+app.get('/api/user/requests/:userId', (req,res)=>{
+    const data = readData();
+    const requests = data.requests.filter(r=>r.userId===req.params.userId);
+    res.json(requests);
+});
+
+// ADMIN: Get all requests
+app.get('/api/admin/requests', (req,res)=>{
+    const data = readData();
+    res.json(data.requests);
+});
+
+// ADMIN: Update request (approve/decline + amount)
+app.post('/api/admin/request/update', (req,res)=>{
+    const { requestId, status, amount } = req.body;
+    const data = readData();
+    const reqItem = data.requests.find(r=>r.id===requestId);
+    if(!reqItem) return res.status(404).json({error:"Request not found"});
+    reqItem.status = status;
+    if(status==="approved") reqItem.amount = amount;
+    writeData(data);
+    res.json(reqItem);
+});
+
+// ADMIN: Get all feedback
+app.get('/api/admin/feedback', (req,res)=>{
+    const data = readData();
+    res.json(data.feedback);
+});
+
+app.listen(PORT, ()=>console.log(`EcoCycle running at http://localhost:${PORT}`));   and progress.json {
+  "users": {
+    "utkawW": {
+      "id": "utkawW",
+      "name": "USMAN ABDULHAMID",
+      "email": "fptbcafe@gmail.com",
+      "password": "12345",
+      "address": "NAHUTA BUNUNU SOUTH DASS LGA BAUCHI STATE NIGERIA",
+      "state": "Bauchi State",
+      "country": "Nigeria",
+      "contact": "09039950410"
+    },
+    "MVnBCe": {
+      "id": "MVnBCe",
+      "name": "ABDULRAHMAN OMOTAYO",
+      "email": "fptbcafe2@gmail.com",
+      "password": "123456",
+      "address": "NEPA MILE 7 ANGUWA YARBAWA JOS PLATEAU STATE",
+      "state": "Kwara State",
+      "country": "Nigeria",
+      "contact": "09046193718"
+    },
+    "YQshCd": {
+      "id": "YQshCd",
+      "name": "DUNGJI SATI",
+      "email": "fptbcafe3@gmail.com",
+      "password": "12345",
+      "address": "BEHIND BAPTIST CHURCH YIMTUL, GRA ROAD PANKSHIN, PLATEAU STATE",
+      "state": "Plateau State",
+      "country": "Nigeria",
+      "contact": "09030932997"
+    }
+  },
+  "requests": [
+    {
+      "id": "ABzEi4",
+      "userId": "utkawW",
+      "type": "glass",
+      "kg": 11111111,
+      "status": "approved",
+      "amount": "100",
+      "date": "11/12/2025",
+      "accomplished": true
+    },
+    {
+      "id": "kpqF6M",
+      "userId": "utkawW",
+      "type": "glass",
+      "kg": 20000,
+      "status": "approved",
+      "amount": "2000",
+      "date": "11/12/2025",
+      "accomplished": true
+    },
+    {
+      "id": "3Z-raO",
+      "userId": "utkawW",
+      "type": "glass",
+      "kg": 22222,
+      "status": "approved",
+      "amount": "2222",
+      "date": "11/12/2025",
+      "accomplished": true
+    },
+    {
+      "id": "Y55CGE",
+      "userId": "utkawW",
+      "type": "glass",
+      "kg": 2222,
+      "status": "approved",
+      "amount": "22222",
+      "date": "11/12/2025",
+      "accomplished": true
+    },
+    {
+      "id": "dGL59s",
+      "userId": "MVnBCe",
+      "type": "paper",
+      "kg": 2000,
+      "amount": "3000",
+      "date": "11/12/2025",
+      "accomplished": false
+    },
+    {
+      "id": "Z9w_Xq",
+      "userId": "utkawW",
+      "type": "glass",
+      "kg": 100,
+      "status": "declined",
+      "amount": 0,
+      "date": "11/12/2025"
+    }
+  ],
+  "feedback": [
+    {
+      "id": "UuTNQd",
+      "userId": "utkawW",
+      "text": "hy",
+      "date": "11/12/2025"
+    },
+    {
+      "id": "Jp39oY",
+      "userId": "MVnBCe",
+      "text": "hello admin",
+      "date": "11/12/2025"
+    }
+  ],
+  "admin": {
+    "email": "admin@ecocycle.com",
+    "password": "admin"
+  }
+}     and     pack-lock.json {
+  "name": "ecocycle",
+  "version": "1.0.0",
+  "lockfileVersion": 3,
+  "requires": true,
+  "packages": {
+    "": {
+      "name": "ecocycle",
+      "version": "1.0.0",
+      "dependencies": {
+        "body-parser": "^1.20.2",
+        "cors": "^2.8.5",
+        "express": "^4.18.2",
+        "nanoid": "^4.0.0"
+      }
+    },
+    "node_modules/accepts": {
+      "version": "1.3.8",
+      "resolved": "https://registry.npmjs.org/accepts/-/accepts-1.3.8.tgz",
+      "integrity": "sha512-PYAthTa2m2VKxuvSD3DPC/Gy+U+sOA1LAuT8mkmRuvw+NACSaeXEQ+NHcVF7rONl6qcaxV3Uuemwawk+7+SJLw==",
+      "license": "MIT",
+      "dependencies": {
+        "mime-types": "~2.1.34",
+        "negotiator": "0.6.3"
+      },
+      "engines": {
+        "node": ">= 0.6"
+      }
+    },
+    "node_modules/array-flatten": {
+      "version": "1.1.1",
+      "resolved": "https://registry.npmjs.org/array-flatten/-/array-flatten-1.1.1.tgz",
+      "integrity": "sha512-PCVAQswWemu6UdxsDFFX/+gVeYqKAod3D3UVm91jHwynguOwAvYPhx8nNlM++NqRcK6CxxpUafjmhIdKiHibqg==",
+      "license": "MIT"
+    },
+    "node_modules/body-parser": {
+      "version": "1.20.3",
+      "resolved": "https://registry.npmjs.org/body-parser/-/body-parser-1.20.3.tgz",
+      "integrity": "sha512-7rAxByjUMqQ3/bHJy7D6OGXvx/MMc4IqBn/X0fcM1QUcAItpZrBEYhWGem+tzXH90c+G01ypMcYJBO9Y30203g==",
+      "license": "MIT",
+      "dependencies": {
+        "bytes": "3.1.2",
+        "content-type": "~1.0.5",
+        "debug": "2.6.9",
+        "depd": "2.0.0",
+        "destroy": "1.2.0",
+        "http-errors": "2.0.0",
+        "iconv-lite": "0.4.24",
+        "on-finished": "2.4.1",
+        "qs": "6.13.0",
+        "raw-body": "2.5.2",
+        "type-is": "~1.6.18",
+        "unpipe": "1.0.0"
+      },
+      "engines": {
+        "node": ">= 0.8",
+        "npm": "1.2.8000 || >= 1.4.16"
+      }
+    },
+    "node_modules/bytes": {
+      "version": "3.1.2",
+      "resolved": "https://registry.npmjs.org/bytes/-/bytes-3.1.2.tgz",
+      "integrity": "sha512-/Nf7TyzTx6S3yRJObOAV7956r8cr2+Oj8AC5dt8wSP3BQAoeX58NoHyCU8P8zGkNXStjTSi6fzO6F0pBdcYbEg==",
+      "license": "MIT",
+      "engines": {
+        "node": ">= 0.8"
+      }
+    },
+    "node_modules/call-bind-apply-helpers": {
+      "version": "1.0.2",
+      "resolved": "https://registry.npmjs.org/call-bind-apply-helpers/-/call-bind-apply-helpers-1.0.2.tgz",
+      "integrity": "sha512-Sp1ablJ0ivDkSzjcaJdxEunN5/XvksFJ2sMBFfq6x0ryhQV/2b/KwFe21cMpmHtPOSij8K99/wSfoEuTObmuMQ==",
+      "license": "MIT",
+      "dependencies": {
+        "es-errors": "^1.3.0",
+        "function-bind": "^1.1.2"
+      },
+      "engines": {
+        "node": ">= 0.4"
+      }
+    },
+    "node_modules/call-bound": {
+      "version": "1.0.4",
+      "resolved": "https://registry.npmjs.org/call-bound/-/call-bound-1.0.4.tgz",
+      "integrity": "sha512-+ys997U96po4Kx/ABpBCqhA9EuxJaQWDQg7295H4hBphv3IZg0boBKuwYpt4YXp6MZ5AmZQnU/tyMTlRpaSejg==",
+      "license": "MIT",
+      "dependencies": {
+        "call-bind-apply-helpers": "^1.0.2",
+        "get-intrinsic": "^1.3.0"
+      },
+      "engines": {
+        "node": ">= 0.4"
+      },
+      "funding": {
+        "url": "https://github.com/sponsors/ljharb"
+      }
+    },
+    "node_modules/content-disposition": {
+      "version": "0.5.4",
+      "resolved": "https://registry.npmjs.org/content-disposition/-/content-disposition-0.5.4.tgz",
+      "integrity": "sha512-FveZTNuGw04cxlAiWbzi6zTAL/lhehaWbTtgluJh4/E95DqMwTmha3KZN1aAWA8cFIhHzMZUvLevkw5Rqk+tSQ==",
+      "license": "MIT",
+      "dependencies": {
+        "safe-buffer": "5.2.1"
+      },
+      "engines": {
+        "node": ">= 0.6"
+      }
+    },
+    "node_modules/content-type": {
+      "version": "1.0.5",
+      "resolved": "https://registry.npmjs.org/content-type/-/content-type-1.0.5.tgz",
+      "integrity": "sha512-nTjqfcBFEipKdXCv4YDQWCfmcLZKm81ldF0pAopTvyrFGVbcR6P/VAAd5G7N+0tTr8QqiU0tFadD6FK4NtJwOA==",
+      "license": "MIT",
+      "engines": {
+        "node": ">= 0.6"
+      }
+    },
+    "node_modules/cookie": {
+      "version": "0.7.1",
+      "resolved": "https://registry.npmjs.org/cookie/-/cookie-0.7.1.tgz",
+      "integrity": "sha512-6DnInpx7SJ2AK3+CTUE/ZM0vWTUboZCegxhC2xiIydHR9jNuTAASBrfEpHhiGOZw/nX51bHt6YQl8jsGo4y/0w==",
+      "license": "MIT",
+      "engines": {
+        "node": ">= 0.6"
+      }
+    },
+    "node_modules/cookie-signature": {
+      "version": "1.0.6",
+      "resolved": "https://registry.npmjs.org/cookie-signature/-/cookie-signature-1.0.6.tgz",
+      "integrity": "sha512-QADzlaHc8icV8I7vbaJXJwod9HWYp8uCqf1xa4OfNu1T7JVxQIrUgOWtHdNDtPiywmFbiS12VjotIXLrKM3orQ==",
+      "license": "MIT"
+    },
+    "node_modules/cors": {
+      "version": "2.8.5",
+      "resolved": "https://registry.npmjs.org/cors/-/cors-2.8.5.tgz",
+      "integrity": "sha512-KIHbLJqu73RGr/hnbrO9uBeixNGuvSQjul/jdFvS/KFSIH1hWVd1ng7zOHx+YrEfInLG7q4n6GHQ9cDtxv/P6g==",
+      "license": "MIT",
+      "dependencies": {
+        "object-assign": "^4",
+        "vary": "^1"
+      },
+      "engines": {
+        "node": ">= 0.10"
+      }
+    },
+    "node_modules/debug": {
+      "version": "2.6.9",
+      "resolved": "https://registry.npmjs.org/debug/-/debug-2.6.9.tgz",
+      "integrity": "sha512-bC7ElrdJaJnPbAP+1EotYvqZsb3ecl5wi6Bfi6BJTUcNowp6cvspg0jXznRTKDjm/E7AdgFBVeAPVMNcKGsHMA==",
+      "license": "MIT",
+      "dependencies": {
+        "ms": "2.0.0"
+      }
+    },
+    "node_modules/depd": {
+      "version": "2.0.0",
+      "resolved": "https://registry.npmjs.org/depd/-/depd-2.0.0.tgz",
+      "integrity": "sha512-g7nH6P6dyDioJogAAGprGpCtVImJhpPk/roCzdb3fIh61/s/nPsfR6onyMwkCAR/OlC3yBC0lESvUoQEAssIrw==",
+      "license": "MIT",
+      "engines": {
+        "node": ">= 0.8"
+      }
+    },
+    "node_modules/destroy": {
+      "version": "1.2.0",
+      "resolved": "https://registry.npmjs.org/destroy/-/destroy-1.2.0.tgz",
+      "integrity": "sha512-2sJGJTaXIIaR1w4iJSNoN0hnMY7Gpc/n8D4qSCJw8QqFWXf7cuAgnEHxBpweaVcPevC2l3KpjYCx3NypQQgaJg==",
+      "license": "MIT",
+      "engines": {
+        "node": ">= 0.8",
+        "npm": "1.2.8000 || >= 1.4.16"
+      }
+    },
+    "node_modules/dunder-proto": {
+      "version": "1.0.1",
+      "resolved": "https://registry.npmjs.org/dunder-proto/-/dunder-proto-1.0.1.tgz",
+      "integrity": "sha512-KIN/nDJBQRcXw0MLVhZE9iQHmG68qAVIBg9CqmUYjmQIhgij9U5MFvrqkUL5FbtyyzZuOeOt0zdeRe4UY7ct+A==",
+      "license": "MIT",
+      "dependencies": {
+        "call-bind-apply-helpers": "^1.0.1",
+        "es-errors": "^1.3.0",
+        "gopd": "^1.2.0"
+      },
+      "engines": {
+        "node": ">= 0.4"
+      }
+    },
+    "node_modules/ee-first": {
+      "version": "1.1.1",
+      "resolved": "https://registry.npmjs.org/ee-first/-/ee-first-1.1.1.tgz",
+      "integrity": "sha512-WMwm9LhRUo+WUaRN+vRuETqG89IgZphVSNkdFgeb6sS/E4OrDIN7t48CAewSHXc6C8lefD8KKfr5vY61brQlow==",
+      "license": "MIT"
+    },
+    "node_modules/encodeurl": {
+      "version": "2.0.0",
+      "resolved": "https://registry.npmjs.org/encodeurl/-/encodeurl-2.0.0.tgz",
+      "integrity": "sha512-Q0n9HRi4m6JuGIV1eFlmvJB7ZEVxu93IrMyiMsGC0lrMJMWzRgx6WGquyfQgZVb31vhGgXnfmPNNXmxnOkRBrg==",
+      "license": "MIT",
+      "engines": {
+        "node": ">= 0.8"
+      }
+    },
+    "node_modules/es-define-property": {
+      "version": "1.0.1",
+      "resolved": "https://registry.npmjs.org/es-define-property/-/es-define-property-1.0.1.tgz",
+      "integrity": "sha512-e3nRfgfUZ4rNGL232gUgX06QNyyez04KdjFrF+LTRoOXmrOgFKDg4BCdsjW8EnT69eqdYGmRpJwiPVYNrCaW3g==",
+      "license": "MIT",
+      "engines": {
+        "node": ">= 0.4"
+      }
+    },
+    "node_modules/es-errors": {
+      "version": "1.3.0",
+      "resolved": "https://registry.npmjs.org/es-errors/-/es-errors-1.3.0.tgz",
+      "integrity": "sha512-Zf5H2Kxt2xjTvbJvP2ZWLEICxA6j+hAmMzIlypy4xcBg1vKVnx89Wy0GbS+kf5cwCVFFzdCFh2XSCFNULS6csw==",
+      "license": "MIT",
+      "engines": {
+        "node": ">= 0.4"
+      }
+    },
+    "node_modules/es-object-atoms": {
+      "version": "1.1.1",
+      "resolved": "https://registry.npmjs.org/es-object-atoms/-/es-object-atoms-1.1.1.tgz",
+      "integrity": "sha512-FGgH2h8zKNim9ljj7dankFPcICIK9Cp5bm+c2gQSYePhpaG5+esrLODihIorn+Pe6FGJzWhXQotPv73jTaldXA==",
+      "license": "MIT",
+      "dependencies": {
+        "es-errors": "^1.3.0"
+      },
+      "engines": {
+        "node": ">= 0.4"
+      }
+    },
+    "node_modules/escape-html": {
+      "version": "1.0.3",
+      "resolved": "https://registry.npmjs.org/escape-html/-/escape-html-1.0.3.tgz",
+      "integrity": "sha512-NiSupZ4OeuGwr68lGIeym/ksIZMJodUGOSCZ/FSnTxcrekbvqrgdUxlJOMpijaKZVjAJrWrGs/6Jy8OMuyj9ow==",
+      "license": "MIT"
+    },
+    "node_modules/etag": {
+      "version": "1.8.1",
+      "resolved": "https://registry.npmjs.org/etag/-/etag-1.8.1.tgz",
+      "integrity": "sha512-aIL5Fx7mawVa300al2BnEE4iNvo1qETxLrPI/o05L7z6go7fCw1J6EQmbK4FmJ2AS7kgVF/KEZWufBfdClMcPg==",
+      "license": "MIT",
+      "engines": {
+        "node": ">= 0.6"
+      }
+    },
+    "node_modules/express": {
+      "version": "4.21.2",
+      "resolved": "https://registry.npmjs.org/express/-/express-4.21.2.tgz",
+      "integrity": "sha512-28HqgMZAmih1Czt9ny7qr6ek2qddF4FclbMzwhCREB6OFfH+rXAnuNCwo1/wFvrtbgsQDb4kSbX9de9lFbrXnA==",
+      "license": "MIT",
+      "dependencies": {
+        "accepts": "~1.3.8",
+        "array-flatten": "1.1.1",
+        "body-parser": "1.20.3",
+        "content-disposition": "0.5.4",
+        "content-type": "~1.0.4",
+        "cookie": "0.7.1",
+        "cookie-signature": "1.0.6",
+        "debug": "2.6.9",
+        "depd": "2.0.0",
+        "encodeurl": "~2.0.0",
+        "escape-html": "~1.0.3",
+        "etag": "~1.8.1",
+        "finalhandler": "1.3.1",
+        "fresh": "0.5.2",
+        "http-errors": "2.0.0",
+        "merge-descriptors": "1.0.3",
+        "methods": "~1.1.2",
+        "on-finished": "2.4.1",
+        "parseurl": "~1.3.3",
+        "path-to-regexp": "0.1.12",
+        "proxy-addr": "~2.0.7",
+        "qs": "6.13.0",
+        "range-parser": "~1.2.1",
+        "safe-buffer": "5.2.1",
+        "send": "0.19.0",
+        "serve-static": "1.16.2",
+        "setprototypeof": "1.2.0",
+        "statuses": "2.0.1",
+        "type-is": "~1.6.18",
+        "utils-merge": "1.0.1",
+        "vary": "~1.1.2"
+      },
+      "engines": {
+        "node": ">= 0.10.0"
+      },
+      "funding": {
+        "type": "opencollective",
+        "url": "https://opencollective.com/express"
+      }
+    },
+    "node_modules/finalhandler": {
+      "version": "1.3.1",
+      "resolved": "https://registry.npmjs.org/finalhandler/-/finalhandler-1.3.1.tgz",
+      "integrity": "sha512-6BN9trH7bp3qvnrRyzsBz+g3lZxTNZTbVO2EV1CS0WIcDbawYVdYvGflME/9QP0h0pYlCDBCTjYa9nZzMDpyxQ==",
+      "license": "MIT",
+      "dependencies": {
+        "debug": "2.6.9",
+        "encodeurl": "~2.0.0",
+        "escape-html": "~1.0.3",
+        "on-finished": "2.4.1",
+        "parseurl": "~1.3.3",
+        "statuses": "2.0.1",
+        "unpipe": "~1.0.0"
+      },
+      "engines": {
+        "node": ">= 0.8"
+      }
+    },
+    "node_modules/forwarded": {
+      "version": "0.2.0",
+      "resolved": "https://registry.npmjs.org/forwarded/-/forwarded-0.2.0.tgz",
+      "integrity": "sha512-buRG0fpBtRHSTCOASe6hD258tEubFoRLb4ZNA6NxMVHNw2gOcwHo9wyablzMzOA5z9xA9L1KNjk/Nt6MT9aYow==",
+      "license": "MIT",
+      "engines": {
+        "node": ">= 0.6"
+      }
+    },
+    "node_modules/fresh": {
+      "version": "0.5.2",
+      "resolved": "https://registry.npmjs.org/fresh/-/fresh-0.5.2.tgz",
+      "integrity": "sha512-zJ2mQYM18rEFOudeV4GShTGIQ7RbzA7ozbU9I/XBpm7kqgMywgmylMwXHxZJmkVoYkna9d2pVXVXPdYTP9ej8Q==",
+      "license": "MIT",
+      "engines": {
+        "node": ">= 0.6"
+      }
+    },
+    "node_modules/function-bind": {
+      "version": "1.1.2",
+      "resolved": "https://registry.npmjs.org/function-bind/-/function-bind-1.1.2.tgz",
+      "integrity": "sha512-7XHNxH7qX9xG5mIwxkhumTox/MIRNcOgDrxWsMt2pAr23WHp6MrRlN7FBSFpCpr+oVO0F744iUgR82nJMfG2SA==",
+      "license": "MIT",
+      "funding": {
+        "url": "https://github.com/sponsors/ljharb"
+      }
+    },
+    "node_modules/get-intrinsic": {
+      "version": "1.3.0",
+      "resolved": "https://registry.npmjs.org/get-intrinsic/-/get-intrinsic-1.3.0.tgz",
+      "integrity": "sha512-9fSjSaos/fRIVIp+xSJlE6lfwhES7LNtKaCBIamHsjr2na1BiABJPo0mOjjz8GJDURarmCPGqaiVg5mfjb98CQ==",
+      "license": "MIT",
+      "dependencies": {
+        "call-bind-apply-helpers": "^1.0.2",
+        "es-define-property": "^1.0.1",
+        "es-errors": "^1.3.0",
+        "es-object-atoms": "^1.1.1",
+        "function-bind": "^1.1.2",
+        "get-proto": "^1.0.1",
+        "gopd": "^1.2.0",
+        "has-symbols": "^1.1.0",
+        "hasown": "^2.0.2",
+        "math-intrinsics": "^1.1.0"
+      },
+      "engines": {
+        "node": ">= 0.4"
+      },
+      "funding": {
+        "url": "https://github.com/sponsors/ljharb"
+      }
+    },
+    "node_modules/get-proto": {
+      "version": "1.0.1",
+      "resolved": "https://registry.npmjs.org/get-proto/-/get-proto-1.0.1.tgz",
+      "integrity": "sha512-sTSfBjoXBp89JvIKIefqw7U2CCebsc74kiY6awiGogKtoSGbgjYE/G/+l9sF3MWFPNc9IcoOC4ODfKHfxFmp0g==",
+      "license": "MIT",
+      "dependencies": {
+        "dunder-proto": "^1.0.1",
+        "es-object-atoms": "^1.0.0"
+      },
+      "engines": {
+        "node": ">= 0.4"
+      }
+    },
+    "node_modules/gopd": {
+      "version": "1.2.0",
+      "resolved": "https://registry.npmjs.org/gopd/-/gopd-1.2.0.tgz",
+      "integrity": "sha512-ZUKRh6/kUFoAiTAtTYPZJ3hw9wNxx+BIBOijnlG9PnrJsCcSjs1wyyD6vJpaYtgnzDrKYRSqf3OO6Rfa93xsRg==",
+      "license": "MIT",
+      "engines": {
+        "node": ">= 0.4"
+      },
+      "funding": {
+        "url": "https://github.com/sponsors/ljharb"
+      }
+    },
+    "node_modules/has-symbols": {
+      "version": "1.1.0",
+      "resolved": "https://registry.npmjs.org/has-symbols/-/has-symbols-1.1.0.tgz",
+      "integrity": "sha512-1cDNdwJ2Jaohmb3sg4OmKaMBwuC48sYni5HUw2DvsC8LjGTLK9h+eb1X6RyuOHe4hT0ULCW68iomhjUoKUqlPQ==",
+      "license": "MIT",
+      "engines": {
+        "node": ">= 0.4"
+      },
+      "funding": {
+        "url": "https://github.com/sponsors/ljharb"
+      }
+    },
+    "node_modules/hasown": {
+      "version": "2.0.2",
+      "resolved": "https://registry.npmjs.org/hasown/-/hasown-2.0.2.tgz",
+      "integrity": "sha512-0hJU9SCPvmMzIBdZFqNPXWa6dqh7WdH0cII9y+CyS8rG3nL48Bclra9HmKhVVUHyPWNH5Y7xDwAB7bfgSjkUMQ==",
+      "license": "MIT",
+      "dependencies": {
+        "function-bind": "^1.1.2"
+      },
+      "engines": {
+        "node": ">= 0.4"
+      }
+    },
+    "node_modules/http-errors": {
+      "version": "2.0.0",
+      "resolved": "https://registry.npmjs.org/http-errors/-/http-errors-2.0.0.tgz",
+      "integrity": "sha512-FtwrG/euBzaEjYeRqOgly7G0qviiXoJWnvEH2Z1plBdXgbyjv34pHTSb9zoeHMyDy33+DWy5Wt9Wo+TURtOYSQ==",
+      "license": "MIT",
+      "dependencies": {
+        "depd": "2.0.0",
+        "inherits": "2.0.4",
+        "setprototypeof": "1.2.0",
+        "statuses": "2.0.1",
+        "toidentifier": "1.0.1"
+      },
+      "engines": {
+        "node": ">= 0.8"
+      }
+    },
+    "node_modules/iconv-lite": {
+      "version": "0.4.24",
+      "resolved": "https://registry.npmjs.org/iconv-lite/-/iconv-lite-0.4.24.tgz",
+      "integrity": "sha512-v3MXnZAcvnywkTUEZomIActle7RXXeedOR31wwl7VlyoXO4Qi9arvSenNQWne1TcRwhCL1HwLI21bEqdpj8/rA==",
+      "license": "MIT",
+      "dependencies": {
+        "safer-buffer": ">= 2.1.2 < 3"
+      },
+      "engines": {
+        "node": ">=0.10.0"
+      }
+    },
+    "node_modules/inherits": {
+      "version": "2.0.4",
+      "resolved": "https://registry.npmjs.org/inherits/-/inherits-2.0.4.tgz",
+      "integrity": "sha512-k/vGaX4/Yla3WzyMCvTQOXYeIHvqOKtnqBduzTHpzpQZzAskKMhZ2K+EnBiSM9zGSoIFeMpXKxa4dYeZIQqewQ==",
+      "license": "ISC"
+    },
+    "node_modules/ipaddr.js": {
+      "version": "1.9.1",
+      "resolved": "https://registry.npmjs.org/ipaddr.js/-/ipaddr.js-1.9.1.tgz",
+      "integrity": "sha512-0KI/607xoxSToH7GjN1FfSbLoU0+btTicjsQSWQlh/hZykN8KpmMf7uYwPW3R+akZ6R/w18ZlXSHBYXiYUPO3g==",
+      "license": "MIT",
+      "engines": {
+        "node": ">= 0.10"
+      }
+    },
+    "node_modules/math-intrinsics": {
+      "version": "1.1.0",
+      "resolved": "https://registry.npmjs.org/math-intrinsics/-/math-intrinsics-1.1.0.tgz",
+      "integrity": "sha512-/IXtbwEk5HTPyEwyKX6hGkYXxM9nbj64B+ilVJnC/R6B0pH5G4V3b0pVbL7DBj4tkhBAppbQUlf6F6Xl9LHu1g==",
+      "license": "MIT",
+      "engines": {
+        "node": ">= 0.4"
+      }
+    },
+    "node_modules/media-typer": {
+      "version": "0.3.0",
+      "resolved": "https://registry.npmjs.org/media-typer/-/media-typer-0.3.0.tgz",
+      "integrity": "sha512-dq+qelQ9akHpcOl/gUVRTxVIOkAJ1wR3QAvb4RsVjS8oVoFjDGTc679wJYmUmknUF5HwMLOgb5O+a3KxfWapPQ==",
+      "license": "MIT",
+      "engines": {
+        "node": ">= 0.6"
+      }
+    },
+    "node_modules/merge-descriptors": {
+      "version": "1.0.3",
+      "resolved": "https://registry.npmjs.org/merge-descriptors/-/merge-descriptors-1.0.3.tgz",
+      "integrity": "sha512-gaNvAS7TZ897/rVaZ0nMtAyxNyi/pdbjbAwUpFQpN70GqnVfOiXpeUUMKRBmzXaSQ8DdTX4/0ms62r2K+hE6mQ==",
+      "license": "MIT",
+      "funding": {
+        "url": "https://github.com/sponsors/sindresorhus"
+      }
+    },
+    "node_modules/methods": {
+      "version": "1.1.2",
+      "resolved": "https://registry.npmjs.org/methods/-/methods-1.1.2.tgz",
+      "integrity": "sha512-iclAHeNqNm68zFtnZ0e+1L2yUIdvzNoauKU4WBA3VvH/vPFieF7qfRlwUZU+DA9P9bPXIS90ulxoUoCH23sV2w==",
+      "license": "MIT",
+      "engines": {
+        "node": ">= 0.6"
+      }
+    },
+    "node_modules/mime": {
+      "version": "1.6.0",
+      "resolved": "https://registry.npmjs.org/mime/-/mime-1.6.0.tgz",
+      "integrity": "sha512-x0Vn8spI+wuJ1O6S7gnbaQg8Pxh4NNHb7KSINmEWKiPE4RKOplvijn+NkmYmmRgP68mc70j2EbeTFRsrswaQeg==",
+      "license": "MIT",
+      "bin": {
+        "mime": "cli.js"
+      },
+      "engines": {
+        "node": ">=4"
+      }
+    },
+    "node_modules/mime-db": {
+      "version": "1.52.0",
+      "resolved": "https://registry.npmjs.org/mime-db/-/mime-db-1.52.0.tgz",
+      "integrity": "sha512-sPU4uV7dYlvtWJxwwxHD0PuihVNiE7TyAbQ5SWxDCB9mUYvOgroQOwYQQOKPJ8CIbE+1ETVlOoK1UC2nU3gYvg==",
+      "license": "MIT",
+      "engines": {
+        "node": ">= 0.6"
+      }
+    },
+    "node_modules/mime-types": {
+      "version": "2.1.35",
+      "resolved": "https://registry.npmjs.org/mime-types/-/mime-types-2.1.35.tgz",
+      "integrity": "sha512-ZDY+bPm5zTTF+YpCrAU9nK0UgICYPT0QtT1NZWFv4s++TNkcgVaT0g6+4R2uI4MjQjzysHB1zxuWL50hzaeXiw==",
+      "license": "MIT",
+      "dependencies": {
+        "mime-db": "1.52.0"
+      },
+      "engines": {
+        "node": ">= 0.6"
+      }
+    },
+    "node_modules/ms": {
+      "version": "2.0.0",
+      "resolved": "https://registry.npmjs.org/ms/-/ms-2.0.0.tgz",
+      "integrity": "sha512-Tpp60P6IUJDTuOq/5Z8cdskzJujfwqfOTkrwIwj7IRISpnkJnT6SyJ4PCPnGMoFjC9ddhal5KVIYtAt97ix05A==",
+      "license": "MIT"
+    },
+    "node_modules/nanoid": {
+      "version": "4.0.2",
+      "resolved": "https://registry.npmjs.org/nanoid/-/nanoid-4.0.2.tgz",
+      "integrity": "sha512-7ZtY5KTCNheRGfEFxnedV5zFiORN1+Y1N6zvPTnHQd8ENUvfaDBeuJDZb2bN/oXwXxu3qkTXDzy57W5vAmDTBw==",
+      "funding": [
+        {
+          "type": "github",
+          "url": "https://github.com/sponsors/ai"
+        }
+      ],
+      "license": "MIT",
+      "bin": {
+        "nanoid": "bin/nanoid.js"
+      },
+      "engines": {
+        "node": "^14 || ^16 || >=18"
+      }
+    },
+    "node_modules/negotiator": {
+      "version": "0.6.3",
+      "resolved": "https://registry.npmjs.org/negotiator/-/negotiator-0.6.3.tgz",
+      "integrity": "sha512-+EUsqGPLsM+j/zdChZjsnX51g4XrHFOIXwfnCVPGlQk/k5giakcKsuxCObBRu6DSm9opw/O6slWbJdghQM4bBg==",
+      "license": "MIT",
+      "engines": {
+        "node": ">= 0.6"
+      }
+    },
+    "node_modules/object-assign": {
+      "version": "4.1.1",
+      "resolved": "https://registry.npmjs.org/object-assign/-/object-assign-4.1.1.tgz",
+      "integrity": "sha512-rJgTQnkUnH1sFw8yT6VSU3zD3sWmu6sZhIseY8VX+GRu3P6F7Fu+JNDoXfklElbLJSnc3FUQHVe4cU5hj+BcUg==",
+      "license": "MIT",
+      "engines": {
+        "node": ">=0.10.0"
+      }
+    },
+    "node_modules/object-inspect": {
+      "version": "1.13.4",
+      "resolved": "https://registry.npmjs.org/object-inspect/-/object-inspect-1.13.4.tgz",
+      "integrity": "sha512-W67iLl4J2EXEGTbfeHCffrjDfitvLANg0UlX3wFUUSTx92KXRFegMHUVgSqE+wvhAbi4WqjGg9czysTV2Epbew==",
+      "license": "MIT",
+      "engines": {
+        "node": ">= 0.4"
+      },
+      "funding": {
+        "url": "https://github.com/sponsors/ljharb"
+      }
+    },
+    "node_modules/on-finished": {
+      "version": "2.4.1",
+      "resolved": "https://registry.npmjs.org/on-finished/-/on-finished-2.4.1.tgz",
+      "integrity": "sha512-oVlzkg3ENAhCk2zdv7IJwd/QUD4z2RxRwpkcGY8psCVcCYZNq4wYnVWALHM+brtuJjePWiYF/ClmuDr8Ch5+kg==",
+      "license": "MIT",
+      "dependencies": {
+        "ee-first": "1.1.1"
+      },
+      "engines": {
+        "node": ">= 0.8"
+      }
+    },
+    "node_modules/parseurl": {
+      "version": "1.3.3",
+      "resolved": "https://registry.npmjs.org/parseurl/-/parseurl-1.3.3.tgz",
+      "integrity": "sha512-CiyeOxFT/JZyN5m0z9PfXw4SCBJ6Sygz1Dpl0wqjlhDEGGBP1GnsUVEL0p63hoG1fcj3fHynXi9NYO4nWOL+qQ==",
+      "license": "MIT",
+      "engines": {
+        "node": ">= 0.8"
+      }
+    },
+    "node_modules/path-to-regexp": {
+      "version": "0.1.12",
+      "resolved": "https://registry.npmjs.org/path-to-regexp/-/path-to-regexp-0.1.12.tgz",
+      "integrity": "sha512-RA1GjUVMnvYFxuqovrEqZoxxW5NUZqbwKtYz/Tt7nXerk0LbLblQmrsgdeOxV5SFHf0UDggjS/bSeOZwt1pmEQ==",
+      "license": "MIT"
+    },
+    "node_modules/proxy-addr": {
+      "version": "2.0.7",
+      "resolved": "https://registry.npmjs.org/proxy-addr/-/proxy-addr-2.0.7.tgz",
+      "integrity": "sha512-llQsMLSUDUPT44jdrU/O37qlnifitDP+ZwrmmZcoSKyLKvtZxpyV0n2/bD/N4tBAAZ/gJEdZU7KMraoK1+XYAg==",
+      "license": "MIT",
+      "dependencies": {
+        "forwarded": "0.2.0",
+        "ipaddr.js": "1.9.1"
+      },
+      "engines": {
+        "node": ">= 0.10"
+      }
+    },
+    "node_modules/qs": {
+      "version": "6.13.0",
+      "resolved": "https://registry.npmjs.org/qs/-/qs-6.13.0.tgz",
+      "integrity": "sha512-+38qI9SOr8tfZ4QmJNplMUxqjbe7LKvvZgWdExBOmd+egZTtjLB67Gu0HRX3u/XOq7UU2Nx6nsjvS16Z9uwfpg==",
+      "license": "BSD-3-Clause",
+      "dependencies": {
+        "side-channel": "^1.0.6"
+      },
+      "engines": {
+        "node": ">=0.6"
+      },
+      "funding": {
+        "url": "https://github.com/sponsors/ljharb"
+      }
+    },
+    "node_modules/range-parser": {
+      "version": "1.2.1",
+      "resolved": "https://registry.npmjs.org/range-parser/-/range-parser-1.2.1.tgz",
+      "integrity": "sha512-Hrgsx+orqoygnmhFbKaHE6c296J+HTAQXoxEF6gNupROmmGJRoyzfG3ccAveqCBrwr/2yxQ5BVd/GTl5agOwSg==",
+      "license": "MIT",
+      "engines": {
+        "node": ">= 0.6"
+      }
+    },
+    "node_modules/raw-body": {
+      "version": "2.5.2",
+      "resolved": "https://registry.npmjs.org/raw-body/-/raw-body-2.5.2.tgz",
+      "integrity": "sha512-8zGqypfENjCIqGhgXToC8aB2r7YrBX+AQAfIPs/Mlk+BtPTztOvTS01NRW/3Eh60J+a48lt8qsCzirQ6loCVfA==",
+      "license": "MIT",
+      "dependencies": {
+        "bytes": "3.1.2",
+        "http-errors": "2.0.0",
+        "iconv-lite": "0.4.24",
+        "unpipe": "1.0.0"
+      },
+      "engines": {
+        "node": ">= 0.8"
+      }
+    },
+    "node_modules/safe-buffer": {
+      "version": "5.2.1",
+      "resolved": "https://registry.npmjs.org/safe-buffer/-/safe-buffer-5.2.1.tgz",
+      "integrity": "sha512-rp3So07KcdmmKbGvgaNxQSJr7bGVSVk5S9Eq1F+ppbRo70+YeaDxkw5Dd8NPN+GD6bjnYm2VuPuCXmpuYvmCXQ==",
+      "funding": [
+        {
+          "type": "github",
+          "url": "https://github.com/sponsors/feross"
+        },
+        {
+          "type": "patreon",
+          "url": "https://www.patreon.com/feross"
+        },
+        {
+          "type": "consulting",
+          "url": "https://feross.org/support"
+        }
+      ],
+      "license": "MIT"
+    },
+    "node_modules/safer-buffer": {
+      "version": "2.1.2",
+      "resolved": "https://registry.npmjs.org/safer-buffer/-/safer-buffer-2.1.2.tgz",
+      "integrity": "sha512-YZo3K82SD7Riyi0E1EQPojLz7kpepnSQI9IyPbHHg1XXXevb5dJI7tpyN2ADxGcQbHG7vcyRHk0cbwqcQriUtg==",
+      "license": "MIT"
+    },
+    "node_modules/send": {
+      "version": "0.19.0",
+      "resolved": "https://registry.npmjs.org/send/-/send-0.19.0.tgz",
+      "integrity": "sha512-dW41u5VfLXu8SJh5bwRmyYUbAoSB3c9uQh6L8h/KtsFREPWpbX1lrljJo186Jc4nmci/sGUZ9a0a0J2zgfq2hw==",
+      "license": "MIT",
+      "dependencies": {
+        "debug": "2.6.9",
+        "depd": "2.0.0",
+        "destroy": "1.2.0",
+        "encodeurl": "~1.0.2",
+        "escape-html": "~1.0.3",
+        "etag": "~1.8.1",
+        "fresh": "0.5.2",
+        "http-errors": "2.0.0",
+        "mime": "1.6.0",
+        "ms": "2.1.3",
+        "on-finished": "2.4.1",
+        "range-parser": "~1.2.1",
+        "statuses": "2.0.1"
+      },
+      "engines": {
+        "node": ">= 0.8.0"
+      }
+    },
+    "node_modules/send/node_modules/encodeurl": {
+      "version": "1.0.2",
+      "resolved": "https://registry.npmjs.org/encodeurl/-/encodeurl-1.0.2.tgz",
+      "integrity": "sha512-TPJXq8JqFaVYm2CWmPvnP2Iyo4ZSM7/QKcSmuMLDObfpH5fi7RUGmd/rTDf+rut/saiDiQEeVTNgAmJEdAOx0w==",
+      "license": "MIT",
+      "engines": {
+        "node": ">= 0.8"
+      }
+    },
+    "node_modules/send/node_modules/ms": {
+      "version": "2.1.3",
+      "resolved": "https://registry.npmjs.org/ms/-/ms-2.1.3.tgz",
+      "integrity": "sha512-6FlzubTLZG3J2a/NVCAleEhjzq5oxgHyaCU9yYXvcLsvoVaHJq/s5xXI6/XXP6tz7R9xAOtHnSO/tXtF3WRTlA==",
+      "license": "MIT"
+    },
+    "node_modules/serve-static": {
+      "version": "1.16.2",
+      "resolved": "https://registry.npmjs.org/serve-static/-/serve-static-1.16.2.tgz",
+      "integrity": "sha512-VqpjJZKadQB/PEbEwvFdO43Ax5dFBZ2UECszz8bQ7pi7wt//PWe1P6MN7eCnjsatYtBT6EuiClbjSWP2WrIoTw==",
+      "license": "MIT",
+      "dependencies": {
+        "encodeurl": "~2.0.0",
+        "escape-html": "~1.0.3",
+        "parseurl": "~1.3.3",
+        "send": "0.19.0"
+      },
+      "engines": {
+        "node": ">= 0.8.0"
+      }
+    },
+    "node_modules/setprototypeof": {
+      "version": "1.2.0",
+      "resolved": "https://registry.npmjs.org/setprototypeof/-/setprototypeof-1.2.0.tgz",
+      "integrity": "sha512-E5LDX7Wrp85Kil5bhZv46j8jOeboKq5JMmYM3gVGdGH8xFpPWXUMsNrlODCrkoxMEeNi/XZIwuRvY4XNwYMJpw==",
+      "license": "ISC"
+    },
+    "node_modules/side-channel": {
+      "version": "1.1.0",
+      "resolved": "https://registry.npmjs.org/side-channel/-/side-channel-1.1.0.tgz",
+      "integrity": "sha512-ZX99e6tRweoUXqR+VBrslhda51Nh5MTQwou5tnUDgbtyM0dBgmhEDtWGP/xbKn6hqfPRHujUNwz5fy/wbbhnpw==",
+      "license": "MIT",
+      "dependencies": {
+        "es-errors": "^1.3.0",
+        "object-inspect": "^1.13.3",
+        "side-channel-list": "^1.0.0",
+        "side-channel-map": "^1.0.1",
+        "side-channel-weakmap": "^1.0.2"
+      },
+      "engines": {
+        "node": ">= 0.4"
+      },
+      "funding": {
+        "url": "https://github.com/sponsors/ljharb"
+      }
+    },
+    "node_modules/side-channel-list": {
+      "version": "1.0.0",
+      "resolved": "https://registry.npmjs.org/side-channel-list/-/side-channel-list-1.0.0.tgz",
+      "integrity": "sha512-FCLHtRD/gnpCiCHEiJLOwdmFP+wzCmDEkc9y7NsYxeF4u7Btsn1ZuwgwJGxImImHicJArLP4R0yX4c2KCrMrTA==",
+      "license": "MIT",
+      "dependencies": {
+        "es-errors": "^1.3.0",
+        "object-inspect": "^1.13.3"
+      },
+      "engines": {
+        "node": ">= 0.4"
+      },
+      "funding": {
+        "url": "https://github.com/sponsors/ljharb"
+      }
+    },
+    "node_modules/side-channel-map": {
+      "version": "1.0.1",
+      "resolved": "https://registry.npmjs.org/side-channel-map/-/side-channel-map-1.0.1.tgz",
+      "integrity": "sha512-VCjCNfgMsby3tTdo02nbjtM/ewra6jPHmpThenkTYh8pG9ucZ/1P8So4u4FGBek/BjpOVsDCMoLA/iuBKIFXRA==",
+      "license": "MIT",
+      "dependencies": {
+        "call-bound": "^1.0.2",
+        "es-errors": "^1.3.0",
+        "get-intrinsic": "^1.2.5",
+        "object-inspect": "^1.13.3"
+      },
+      "engines": {
+        "node": ">= 0.4"
+      },
+      "funding": {
+        "url": "https://github.com/sponsors/ljharb"
+      }
+    },
+    "node_modules/side-channel-weakmap": {
+      "version": "1.0.2",
+      "resolved": "https://registry.npmjs.org/side-channel-weakmap/-/side-channel-weakmap-1.0.2.tgz",
+      "integrity": "sha512-WPS/HvHQTYnHisLo9McqBHOJk2FkHO/tlpvldyrnem4aeQp4hai3gythswg6p01oSoTl58rcpiFAjF2br2Ak2A==",
+      "license": "MIT",
+      "dependencies": {
+        "call-bound": "^1.0.2",
+        "es-errors": "^1.3.0",
+        "get-intrinsic": "^1.2.5",
+        "object-inspect": "^1.13.3",
+        "side-channel-map": "^1.0.1"
+      },
+      "engines": {
+        "node": ">= 0.4"
+      },
+      "funding": {
+        "url": "https://github.com/sponsors/ljharb"
+      }
+    },
+    "node_modules/statuses": {
+      "version": "2.0.1",
+      "resolved": "https://registry.npmjs.org/statuses/-/statuses-2.0.1.tgz",
+      "integrity": "sha512-RwNA9Z/7PrK06rYLIzFMlaF+l73iwpzsqRIFgbMLbTcLD6cOao82TaWefPXQvB2fOC4AjuYSEndS7N/mTCbkdQ==",
+      "license": "MIT",
+      "engines": {
+        "node": ">= 0.8"
+      }
+    },
+    "node_modules/toidentifier": {
+      "version": "1.0.1",
+      "resolved": "https://registry.npmjs.org/toidentifier/-/toidentifier-1.0.1.tgz",
+      "integrity": "sha512-o5sSPKEkg/DIQNmH43V0/uerLrpzVedkUh8tGNvaeXpfpuwjKenlSox/2O/BTlZUtEe+JG7s5YhEz608PlAHRA==",
+      "license": "MIT",
+      "engines": {
+        "node": ">=0.6"
+      }
+    },
+    "node_modules/type-is": {
+      "version": "1.6.18",
+      "resolved": "https://registry.npmjs.org/type-is/-/type-is-1.6.18.tgz",
+      "integrity": "sha512-TkRKr9sUTxEH8MdfuCSP7VizJyzRNMjj2J2do2Jr3Kym598JVdEksuzPQCnlFPW4ky9Q+iA+ma9BGm06XQBy8g==",
+      "license": "MIT",
+      "dependencies": {
+        "media-typer": "0.3.0",
+        "mime-types": "~2.1.24"
+      },
+      "engines": {
+        "node": ">= 0.6"
+      }
+    },
+    "node_modules/unpipe": {
+      "version": "1.0.0",
+      "resolved": "https://registry.npmjs.org/unpipe/-/unpipe-1.0.0.tgz",
+      "integrity": "sha512-pjy2bYhSsufwWlKwPc+l3cN7+wuJlK6uz0YdJEOlQDbl6jo/YlPi4mb8agUkVC8BF7V8NuzeyPNqRksA3hztKQ==",
+      "license": "MIT",
+      "engines": {
+        "node": ">= 0.8"
+      }
+    },
+    "node_modules/utils-merge": {
+      "version": "1.0.1",
+      "resolved": "https://registry.npmjs.org/utils-merge/-/utils-merge-1.0.1.tgz",
+      "integrity": "sha512-pMZTvIkT1d+TFGvDOqodOclx0QWkkgi6Tdoa8gC8ffGAAqz9pzPTZWAybbsHHoED/ztMtkv/VoYTYyShUn81hA==",
+      "license": "MIT",
+      "engines": {
+        "node": ">= 0.4.0"
+      }
+    },
+    "node_modules/vary": {
+      "version": "1.1.2",
+      "resolved": "https://registry.npmjs.org/vary/-/vary-1.1.2.tgz",
+      "integrity": "sha512-BNGbWLfd0eUPabhkXUVm0j8uuvREyTh5ovRa/dyow/BqAbZJyC+5fU+IzQOzmAKzYqYRAISoRhdQr3eIZ/PXqg==",
+      "license": "MIT",
+      "engines": {
+        "node": ">= 0.8"
+      }
+    }
+  }
+}    package.json {
+  "name": "ecocycle",
+  "version": "1.1.0",
+  "description": "EcoCycle - Sustainable Waste Management System",
+  "main": "server.js",
+  "scripts": {
+    "start": "node server.js"
+  },
+  "dependencies": {
+    "express": "^4.18.2",
+    "body-parser": "^1.20.2",
+    "cors": "^2.8.5",
+    "nanoid": "^4.0.0"
+  }
+}     the anoother folder name public files inside are admin.html  <!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>EcoCycle - Admin Dashboard</title>
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<link rel="stylesheet" href="/style.css">
+</head>
+<body>
+<div class="admin-container">
+  <aside class="sidebar">
+    <h2>EcoCycle Admin</h2>
+    <ul>
+      <li><a href="#" onclick="showSection('users')">All Users</a></li>
+      <li><a href="#" onclick="showSection('requests')">Waste Requests</a></li>
+      <li><a href="#" onclick="showSection('feedback')">Feedback</a></li>
+    </ul>
+  </aside>
+
+  <main class="admin-main">
+    <header>
+      <h1>Dashboard</h1>
+      <div class="stats">
+        <span id="totalUsers">Users: 0</span>
+        <span id="totalRequests">Requests: 0</span>
+        <span id="pendingRequests">Pending: 0</span>
+        <span id="approvedRequests">Approved: 0</span>
+      </div>
+    </header>
+
+    <section id="usersSection" class="admin-section">
+      <h3>All Users</h3>
+      <input id="userSearch" placeholder="Search users by name/email" oninput="filterUsers()">
+      <div id="adminUsers">Loading...</div>
+    </section>
+
+    <section id="requestsSection" class="admin-section hidden">
+      <h3>Waste Requests</h3>
+      <input id="requestSearch" placeholder="Search requests by user or type" oninput="filterRequests()">
+      <div id="adminRequests">Loading...</div>
+    </section>
+
+<!-- Add this inside <main class="admin-main"> -->
+<div id="editUserModal" class="modal hidden">
+    <div class="modal-content">
+        <h3>Edit User</h3>
+        <label>Name: <input type="text" id="editName"></label>
+        <label>Email: <input type="email" id="editEmail" disabled></label>
+        <label>Contact: <input type="text" id="editContact"></label>
+        <label>Address: <input type="text" id="editAddress"></label>
+        <label>State: <input type="text" id="editState"></label>
+        <label>Country: <input type="text" id="editCountry"></label>
+        <div class="modal-buttons">
+            <button id="saveEditBtn">Save</button>
+            <button id="cancelEditBtn">Cancel</button>
+        </div>
+    </div>
+</div>
+
+    <section id="feedbackSection" class="admin-section hidden">
+      <h3>Feedback</h3>
+      <div id="adminFeedback">Loading...</div>
+    </section>
+  </main>
+</div>
+<script src="/app.js"></script>
+</body>
+</html>    app.js // ---------- HOME / REGISTER / LOGIN ----------
+function showPage(page) {
+    document.querySelectorAll('.authDiv').forEach(d => d.classList.add('hidden'));
+    if(page==='register') document.getElementById('registerDiv').classList.remove('hidden');
+    if(page==='login') document.getElementById('loginDiv').classList.remove('hidden');
+}
+
+// ---------- LOCAL STORAGE SESSION ----------
+let currentUser = JSON.parse(localStorage.getItem('ecocycleUser')) || null;
+
+// Redirect to dashboard if already logged in
+if(currentUser && window.location.pathname.endsWith('index.html')) {
+    window.location.href = '/user.html';
+}
+
+// ---------- REGISTER ----------
+document.getElementById('registerBtn')?.addEventListener('click', async ()=>{
+    const data = {
+        name: document.getElementById('name').value.trim(),
+        email: document.getElementById('email').value.trim(),
+        password: document.getElementById('password').value,
+        address: document.getElementById('address').value.trim(),
+        state: document.getElementById('state').value.trim(),
+        country: document.getElementById('country').value.trim(),
+        contact: document.getElementById('contact').value.trim()
+    };
+    // Basic validation
+    if(!data.name || !data.email || !data.password) return alert('Fill required fields');
+    
+    const res = await fetch('/api/user/register',{
+        method:'POST', headers:{'Content-Type':'application/json'}, body:JSON.stringify(data)
+    });
+    const result = await res.json();
+    if(result.error) return alert(result.error);
+    alert('Registered successfully! Please login.');
+    showPage('login');
+});
+
+// ---------- LOGIN ----------
+document.getElementById('loginBtn')?.addEventListener('click', async ()=>{
+    const res = await fetch('/api/user/login',{
+        method:'POST', headers:{'Content-Type':'application/json'},
+        body:JSON.stringify({
+            email: document.getElementById('loginEmail').value,
+            password: document.getElementById('loginPassword').value
+        })
+    });
+    const data = await res.json();
+    if(data.error) return alert(data.error);
+    currentUser = data;
+    localStorage.setItem('ecocycleUser', JSON.stringify(data));
+    window.location.href = '/user.html';
+});
+
+// ---------- USER DASHBOARD ----------
+if(window.location.pathname.endsWith('user.html')){
+    if(!currentUser) window.location.href='/index.html';
+    const $ = s => document.querySelector(s);
+
+    // Display user info
+    $('#userNameDisplay').textContent = currentUser.name;
+    $('#userEmail').textContent = currentUser.email;
+    $('#userAddress').textContent = currentUser.address;
+    $('#userState').textContent = currentUser.state;
+    $('#userCountry').textContent = currentUser.country;
+    $('#userContact').textContent = currentUser.contact;
+
+    // Logout
+    $('#logoutBtn').addEventListener('click',()=>{
+        localStorage.removeItem('ecocycleUser');
+        window.location.href='/index.html';
+    });
+
+    // Submit waste request
+    $('#requestBtn').addEventListener('click', async ()=>{
+        const type = $('#wasteType').value;
+        const kg = parseFloat($('#wasteKg').value);
+        if(!kg || kg<=0) return alert('Enter valid kg');
+        await fetch('/api/user/request',{
+            method:'POST', headers:{'Content-Type':'application/json'},
+            body:JSON.stringify({userId:currentUser.id,type,kg})
+        });
+        $('#wasteKg').value='';
+        loadRequests();
+    });
+
+    // Submit feedback
+    $('#feedbackBtn').addEventListener('click', async ()=>{
+        const text = $('#feedbackText').value.trim();
+        if(!text) return alert('Enter feedback');
+        await fetch('/api/user/feedback',{
+            method:'POST', headers:{'Content-Type':'application/json'},
+            body:JSON.stringify({userId:currentUser.id,text})
+        });
+        $('#feedbackText').value='';
+        alert('Feedback sent!');
+    });
+
+    async function loadRequests(){
+        const res = await fetch(`/api/user/requests/${currentUser.id}`);
+        const data = await res.json();
+        $('#requestsDiv').innerHTML = data.map(r=>`
+            <div class="request-card">
+                Type: ${r.type} | Kg: ${r.kg} | Status: ${r.status} 
+                | Amount: ${r.amount || '-'} | Accomplished: ${r.accomplished} | Date: ${r.date}
+            </div>
+        `).join('') || 'No requests yet';
+    }
+    loadRequests();
+}
+
+// ---------- ADMIN DASHBOARD ----------
+if(window.location.pathname.endsWith('admin.html')){
+    const $ = s => document.querySelector(s);
+    let usersData=[], requestsData=[], feedbackData=[];
+
+    function showSection(section){
+        ['usersSection','requestsSection','feedbackSection'].forEach(s => document.getElementById(s).classList.add('hidden'));
+        document.getElementById(section+'Section').classList.remove('hidden');
+    }
+
+    async function loadAdminUsers(){
+        const res = await fetch('/api/admin/users');
+        const data = await res.json();
+        usersData = Object.values(data);
+        $('#adminUsers').innerHTML = usersData.map(u=>`
+            <div class="admin-card">
+                <div>
+                    <strong>${u.name}</strong> (${u.email})<br>
+                    Contact: ${u.contact} | ${u.address}, ${u.state}, ${u.country}<br>
+                    Password: ${u.password}
+                </div>
+                <div>
+                    <button onclick="deleteUser('${u.id}')">Delete</button>
+                    <button onclick="editUser('${u.id}')">Edit</button>
+                </div>
+            </div>
+        `).join('') || 'No users';
+        $('#totalUsers').textContent = `Users: ${usersData.length}`;
+    }
+
+    async function loadAdminRequests(){
+        const res = await fetch('/api/admin/requests');
+        requestsData = await res.json();
+        $('#adminRequests').innerHTML = requestsData.map(r=>`
+            <div class="admin-card">
+                <div>
+                    UserID: ${r.userId}, Type: ${r.type}, Kg: ${r.kg}, 
+                    Status: <span class="status-badge status-${r.status}">${r.status}</span>, 
+                    Amount: ${r.amount || '-'}, Accomplished: ${r.accomplished}, Date: ${r.date}
+                </div>
+                <div>
+                    ${r.status==='pending'?`
+                        <button onclick="updateRequest('${r.id}','approved',prompt('Enter amount'))">Approve</button>
+                        <button onclick="updateRequest('${r.id}','declined')">Decline</button>`:''}
+                    <button onclick="toggleAccomplished('${r.id}')">Toggle Accomplished</button>
+                </div>
+            </div>
+        `).join('') || 'No requests';
+        $('#totalRequests').textContent=`Requests: ${requestsData.length}`;
+        $('#pendingRequests').textContent=`Pending: ${requestsData.filter(r=>r.status==='pending').length}`;
+        $('#approvedRequests').textContent=`Approved: ${requestsData.filter(r=>r.status==='approved').length}`;
+    }
+
+    async function loadAdminFeedback(){
+        const res = await fetch('/api/admin/feedback');
+        feedbackData = await res.json();
+        $('#adminFeedback').innerHTML = feedbackData.map(f=>`
+            <div class="admin-card">UserID: ${f.userId}, Feedback: ${f.text}, Date: ${f.date}</div>
+        `).join('') || 'No feedback';
+    }
+
+    // DELETE USER
+    window.deleteUser = async function(id){
+        if(!confirm('Delete user?')) return;
+        await fetch('/api/admin/user/delete',{
+            method:'POST', headers:{'Content-Type':'application/json'}, body:JSON.stringify({userId:id})
+        });
+        await refreshAdminData();
+    }
+
+   // GLOBAL VARIABLE to hold editing user
+let editingUserId = null;
+
+// EDIT USER
+window.editUser = function(id){
+    const u = usersData.find(x=>x.id===id);
+    if(!u) return alert('User not found');
+
+    // Set current values in modal
+    editingUserId = id;
+    $('#editName').value = u.name;
+    $('#editEmail').value = u.email;
+    $('#editContact').value = u.contact;
+    $('#editAddress').value = u.address;
+    $('#editState').value = u.state;
+    $('#editCountry').value = u.country;
+
+    // Show modal
+    $('#editUserModal').classList.remove('hidden');
+}
+
+// SAVE EDIT
+$('#saveEditBtn').addEventListener('click', async ()=>{
+    const updates = {
+        name: $('#editName').value.trim(),
+        contact: $('#editContact').value.trim(),
+        address: $('#editAddress').value.trim(),
+        state: $('#editState').value.trim(),
+        country: $('#editCountry').value.trim()
+    };
+    await fetch('/api/admin/user/update',{
+        method:'POST', headers:{'Content-Type':'application/json'},
+        body:JSON.stringify({userId:editingUserId, updates})
+    });
+    $('#editUserModal').classList.add('hidden');
+    editingUserId = null;
+    refreshAdminData();
+});
+
+// CANCEL EDIT
+$('#cancelEditBtn').addEventListener('click', ()=>{
+    $('#editUserModal').classList.add('hidden');
+    editingUserId = null;
+});
+
+
+    // UPDATE REQUEST
+    window.updateRequest = async function(id,status,amount){
+        await fetch('/api/admin/request/update',{
+            method:'POST', headers:{'Content-Type':'application/json'}, body:JSON.stringify({requestId:id,status,amount})
+        });
+        await refreshAdminData();
+    }
+
+    window.toggleAccomplished = async function(id){
+        const r = requestsData.find(x=>x.id===id);
+        await fetch('/api/admin/request/update',{
+            method:'POST', headers:{'Content-Type':'application/json'}, body:JSON.stringify({requestId:id, accomplished:!r.accomplished})
+        });
+        await refreshAdminData();
+    }
+
+    async function refreshAdminData(){
+        await loadAdminUsers();
+        await loadAdminRequests();
+        await loadAdminFeedback();
+    }
+
+    // Initialize
+    showSection('users');
+    refreshAdminData();
+}      and index.html  <!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>EcoCycle - Home</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <link rel="stylesheet" href="/style.css">
+  <style>
+    /* Add soft gradient background */
+    body {
+      background: linear-gradient(135deg, #e9f8ec, #f4fff5);
+      font-family: 'Arial', sans-serif;
+      margin: 0;
+      padding: 0;
+      color: #222;
+    }
+
+    /* Main container with card effect */
+    .home-container {
+      max-width: 700px;
+      background: #fff;
+      margin: 50px auto;
+      padding: 40px 30px;
+      border-radius: 15px;
+      box-shadow: 0 8px 25px rgba(0,0,0,0.1);
+      transition: 0.3s;
+    }
+    .home-container:hover {
+      transform: translateY(-5px);
+      box-shadow: 0 10px 30px rgba(0,0,0,0.15);
+    }
+
+    header {
+      text-align: center;
+      margin-bottom: 25px;
+    }
+    header h1 {
+      color: #0b6623;
+      font-size: 2.3rem;
+      margin-bottom: 10px;
+      letter-spacing: 1px;
+    }
+    header p {
+      font-size: 1.1rem;
+      color: #444;
+      margin: 0 auto;
+      max-width: 500px;
+      line-height: 1.6;
+    }
+    .tagline {
+      margin-top: 10px;
+      color: #0b6623;
+      font-weight: bold;
+    }
+
+    .home-buttons {
+      text-align: center;
+      margin-top: 35px;
+    }
+    .home-buttons button {
+      margin: 10px;
+      padding: 12px 30px;
+      font-size: 1rem;
+      border: none;
+      border-radius: 8px;
+      background: #0b6623;
+      color: #fff;
+      cursor: pointer;
+      transition: background 0.3s, transform 0.2s;
+    }
+    .home-buttons button:hover {
+      background: #094d1a;
+      transform: scale(1.05);
+    }
+
+    .authDiv {
+      max-width: 400px;
+      margin: 40px auto;
+      padding: 25px;
+      background: #f9fafb;
+      border-radius: 10px;
+      box-shadow: 0 3px 10px rgba(0,0,0,0.05);
+      animation: fadeIn 0.4s ease;
+    }
+
+    .authDiv h2 {
+      text-align: center;
+      color: #0b6623;
+      margin-bottom: 15px;
+    }
+
+    input {
+      width: 100%;
+      padding: 10px;
+      margin: 6px 0;
+      border-radius: 6px;
+      border: 1px solid #ccc;
+      font-size: 0.95rem;
+      transition: 0.3s;
+    }
+
+    input:focus {
+      border-color: #0b6623;
+      box-shadow: 0 0 5px #0b6623;
+      outline: none;
+    }
+
+    button {
+      width: 100%;
+      background: #0b6623;
+      color: #fff;
+      padding: 10px;
+      margin-top: 8px;
+      border: none;
+      border-radius: 6px;
+      font-size: 1rem;
+      cursor: pointer;
+      transition: 0.3s;
+    }
+    button:hover {
+      background: #094d1a;
+    }
+
+    p {
+      text-align: center;
+      font-size: 0.9rem;
+      color: #444;
+    }
+
+    a {
+      color: #0b6623;
+      font-weight: bold;
+      text-decoration: none;
+    }
+    a:hover {
+      text-decoration: underline;
+    }
+
+    @keyframes fadeIn {
+      from { opacity: 0; transform: translateY(10px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+
+    @media (max-width: 600px) {
+      .home-container {
+        padding: 25px 20px;
+      }
+      header h1 {
+        font-size: 1.8rem;
+      }
+      .home-buttons button {
+        width: 80%;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="container home-container">
+    <header>
+      <h1>🌿 EcoCycle</h1>
+      <p>At <strong>EcoCycle</strong>, we’re committed to building a cleaner and more sustainable world. 
+      Join us in turning everyday waste into valuable resources while earning exciting rewards. 
+      <span class="tagline">Promote recycling, reduce waste, and earn rewards!</span></p>
+    </header>
+
+    <div class="home-buttons">
+      <button onclick="showPage('register')">Register</button>
+      <button onclick="showPage('login')">Login</button>
+    </div>
+
+    <!-- Register Section -->
+    <div id="registerDiv" class="authDiv hidden">
+      <h2>Create an Account</h2>
+      <input id="name" placeholder="Full Name">
+      <input id="email" placeholder="Email Address">
+      <input type="password" id="password" placeholder="Password">
+      <input id="address" placeholder="Home Address">
+      <input id="state" placeholder="State">
+      <input id="country" placeholder="Country">
+      <input id="contact" placeholder="Contact Number">
+      <button id="registerBtn">Register</button>
+      <p>Already have an account? 
+        <a href="#" onclick="showPage('login')">Login here</a>
+      </p>
+    </div>
+
+    <!-- Login Section -->
+    <div id="loginDiv" class="authDiv hidden">
+      <h2>Welcome Back</h2>
+      <input id="loginEmail" placeholder="Email">
+      <input type="password" id="loginPassword" placeholder="Password">
+      <button id="loginBtn">Login</button>
+      <p>Don’t have an account? 
+        <a href="#" onclick="showPage('register')">Register here</a>
+      </p>
+    </div>
+  </div>
+
+  <script src="/app.js"></script>
+</body>
+</html>       and style.css body{font-family:Arial, sans-serif;background:#eef2f5;color:#222;margin:0;padding:0;}
+.container{max-width:1000px;margin:20px auto;background:#fff;padding:20px;border-radius:10px;box-shadow:0 5px 15px rgba(0,0,0,0.1);}
+header{display:flex;justify-content:space-between;align-items:center;}
+header h1{color:#0b6623;margin:0;}
+header button{padding:6px 12px;border:none;border-radius:5px;background:#0b6623;color:#fff;cursor:pointer;}
+header button:hover{background:#094d1a;}
+input, select, button, textarea{padding:8px;margin:4px 0;border-radius:5px;border:1px solid #ccc;width:100%;}
+button{background:#0b6623;color:#fff;cursor:pointer;}
+button:hover{background:#094d1a;}
+textarea{height:60px;}
+.hidden{display:none;}
+.dashboard-container img.dashboard-img{width:150px;display:block;margin:10px auto;}
+.authDiv{margin-top:20px;padding:15px;background:#f0f4f8;border-radius:8px;}
+.home-buttons button{margin:5px;padding:10px 20px;border:none;border-radius:5px;background:#0b6623;color:#fff;cursor:pointer;}
+.home-buttons button:hover{background:#094d1a;}
+.admin-card, .request-card{border:1px solid #ccc;padding:10px;margin:5px 0;border-radius:5px;background:#f9f9f9;}
+.admin-section{margin-top:20px;}
+
+
+
+/* General */
+body{font-family:Arial,sans-serif;background:#f5f6fa;margin:0;padding:0;}
+.admin-container{display:flex;min-height:100vh;}
+.sidebar{width:250px;background:#0b6623;color:#fff;padding:20px;box-shadow:2px 0 5px rgba(0,0,0,0.1);}
+.sidebar h2{text-align:center;margin-bottom:30px;}
+.sidebar ul{list-style:none;padding:0;}
+.sidebar ul li{margin:15px 0;}
+.sidebar ul li a{color:#fff;text-decoration:none;font-weight:bold;display:block;}
+.sidebar ul li a:hover{background:#094d1a;padding:5px;border-radius:5px;}
+.admin-main{flex:1;padding:20px;overflow:auto;}
+header{display:flex;justify-content:space-between;align-items:center;margin-bottom:20px;}
+header h1{color:#0b6623;}
+.stats span{margin-left:10px;font-weight:bold;}
+.admin-section{background:#fff;padding:15px;border-radius:8px;box-shadow:0 2px 5px rgba(0,0,0,0.1);margin-bottom:20px;}
+.admin-card{border:1px solid #ccc;padding:10px;margin:8px 0;border-radius:5px;background:#f9f9f9;display:flex;justify-content:space-between;align-items:center;}
+.admin-card button{margin-left:5px;padding:5px 10px;border:none;border-radius:5px;background:#0b6623;color:#fff;cursor:pointer;}
+.admin-card button:hover{background:#094d1a;}
+.hidden{display:none;}
+input{width:100%;padding:6px;margin:5px 0;border-radius:5px;border:1px solid #ccc;}
+.status-badge{padding:3px 8px;border-radius:5px;color:#fff;font-weight:bold;}
+.status-pending{background:#f39c12;}
+.status-approved{background:#27ae60;}
+.status-declined{background:#c0392b;}
+.status-accomplished{background:#2980b9;}
+
+
+
+/* REWARDS SECTION */
+#rewardsSection {
+  text-align: center;
+}
+
+.progress-bar {
+  width: 100%;
+  height: 20px;
+  background: #e0e0e0;
+  border-radius: 10px;
+  overflow: hidden;
+  margin-top: 10px;
+}
+
+#progressFill {
+  height: 100%;
+  width: 0%;
+  background: linear-gradient(90deg, #0b6623, #4CAF50);
+  transition: width 0.5s ease;
+}
+
+
+/* ================= USER PAGE CUSTOM STYLING ================= */
+.user-body {
+  font-family: "Arial", sans-serif;
+  background: linear-gradient(135deg, #d9f5dd, #eef9f0);
+  margin: 0;
+  padding: 0;
+}
+
+.user-dashboard {
+  max-width: 1100px;
+  margin: 30px auto;
+  padding: 20px;
+}
+
+.user-header {
+  background: #0b6623;
+  color: #fff;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 15px 25px;
+  border-radius: 12px;
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.15);
+}
+
+.user-header h1 {
+  font-size: 1.6rem;
+  margin: 0;
+   color: #fff;
+}
+
+.logout-btn {
+  background: #fff;
+  color: #0b6623;
+  border: none;
+  padding: 8px 8px;
+  border-radius: 6px;
+  font-weight: bold;
+  transition: 0.3s;
+}
+
+.logout-btn:hover {
+  background: #e3f6e5;
+  transform: scale(1.05);
+}
+
+/* CARD STYLE */
+.card {
+  background: #fff;
+  padding: 20px;
+  border-radius: 12px;
+  margin-top: 20px;
+  box-shadow: 0 4px 10px rgba(0,0,0,0.08);
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+.card:hover {
+  transform: translateY(-3px);
+  box-shadow: 0 6px 15px rgba(0,0,0,0.12);
+}
+
+/* PROFILE SECTION */
+.user-profile {
+  display: flex;
+  align-items: center;
+  gap: 20px;
+}
+
+.profile-img {
+  width: 130px;
+  height: 130px;
+  border-radius: 50%;
+  border: 4px solid #0b6623;
+  object-fit: cover;
+}
+
+.profile-right h2 {
+  color: #0b6623;
+  margin-bottom: 10px;
+}
+
+/* FORM */
+.form-row {
+  display: flex;
+  gap: 15px;
+  flex-wrap: wrap;
+}
+
+.form-row input,
+.form-row select {
+  flex: 1;
+  padding: 10px;
+  border-radius: 6px;
+  border: 1px solid #ccc;
+  font-size: 14px;
+}
+
+.primary-btn {
+  background: #0b6623;
+  color: white;
+  border: none;
+  border-radius: 6px;
+  padding: 10px 16px;
+  cursor: pointer;
+  transition: 0.3s;
+}
+
+.primary-btn:hover {
+  background: #094d1a;
+}
+
+/* REQUESTS BOX */
+.requests-box {
+  max-height: 250px;
+  overflow-y: auto;
+  border: 1px solid #e1e1e1;
+  padding: 10px;
+  border-radius: 6px;
+  background: #f9f9f9;
+}
+
+/* FEEDBACK */
+.feedback-card textarea {
+  width: 100%;
+  height: 100px;
+  border-radius: 6px;
+  border: 1px solid #ccc;
+  padding: 10px;
+  margin-bottom: 10px;
+  resize: none;
+}
+
+.feedback-card textarea:focus {
+  border-color: #0b6623;
+  outline: none;
+  box-shadow: 0 0 5px #0b6623;
+}
+
+/* RESPONSIVE */
+@media (max-width: 768px) {
+  .user-profile {
+    flex-direction: column;
+    text-align: center;
+  }
+  .form-row {
+    flex-direction: column;
+  }
+  .user-header h1 {
+    font-size: 1.2rem;
+  }
+}      ser.html <!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>EcoCycle - User Dashboard</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <link rel="stylesheet" href="/style.css">
+</head>
+<body class="user-body">
+  <div class="user-dashboard">
+    <header class="user-header">
+      <h1>🌍 EcoCycle    - User Dashboard</h1>
+      <button id="logoutBtn" class="logout-btn">Logout</button>
+    </header>
+
+    <section class="user-profile card">
+      <div class="profile-left">
+        <img src="data:image/png;base64,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" alt="Profile" class="profile-img">
+      </div>
+      <div class="profile-right">
+        <h2 id="userNameDisplay"></h2>
+        <p><strong>Email:</strong> <span id="userEmail"></span></p>
+        <p><strong>Address:</strong> <span id="userAddress"></span>, <span id="userState"></span>, <span id="userCountry"></span></p>
+        <p><strong>Contact:</strong> <span id="userContact"></span></p>
+      </div>
+    </section>
+
+    <section class="card">
+      <h3>♻️ Submit Waste Request</h3>
+      <div class="form-row">
+        <select id="wasteType">
+          <option value="plastics">Plastics</option>
+          <option value="paper">Paper</option>
+          <option value="glass">Glass</option>
+          <option value="organic">Organic</option>
+        </select>
+        <input type="number" id="wasteKg" placeholder="Enter weight (Kg)">
+        <button id="requestBtn" class="primary-btn">Submit</button>
+      </div>
+    </section>
+
+    <section class="card">
+      <h3>📦 Your Requests</h3>
+      <div id="requestsDiv" class="requests-box">Loading...</div>
+    </section>
+
+    <section class="card feedback-card">
+      <h3>💬 Submit Feedback</h3>
+      <textarea id="feedbackText" placeholder="Share your thoughts...add Your Email/Phone for reponds"></textarea>
+      <button id="feedbackBtn" class="primary-btn">Submit Feedback</button>
+    </section>
+  </div>
+
+  <script src="/app.js"></script>
+</body>
+</html>

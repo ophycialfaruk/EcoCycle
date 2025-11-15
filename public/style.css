@@ -1,0 +1,220 @@
+body{font-family:Arial, sans-serif;background:#eef2f5;color:#222;margin:0;padding:0;}
+.container{max-width:1000px;margin:20px auto;background:#fff;padding:20px;border-radius:10px;box-shadow:0 5px 15px rgba(0,0,0,0.1);}
+header{display:flex;justify-content:space-between;align-items:center;}
+header h1{color:#0b6623;margin:0;}
+header button{padding:6px 12px;border:none;border-radius:5px;background:#0b6623;color:#fff;cursor:pointer;}
+header button:hover{background:#094d1a;}
+input, select, button, textarea{padding:8px;margin:4px 0;border-radius:5px;border:1px solid #ccc;width:100%;}
+button{background:#0b6623;color:#fff;cursor:pointer;}
+button:hover{background:#094d1a;}
+textarea{height:60px;}
+.hidden{display:none;}
+.dashboard-container img.dashboard-img{width:150px;display:block;margin:10px auto;}
+.authDiv{margin-top:20px;padding:15px;background:#f0f4f8;border-radius:8px;}
+.home-buttons button{margin:5px;padding:10px 20px;border:none;border-radius:5px;background:#0b6623;color:#fff;cursor:pointer;}
+.home-buttons button:hover{background:#094d1a;}
+.admin-card, .request-card{border:1px solid #ccc;padding:10px;margin:5px 0;border-radius:5px;background:#f9f9f9;}
+.admin-section{margin-top:20px;}
+
+
+
+/* General */
+body{font-family:Arial,sans-serif;background:#f5f6fa;margin:0;padding:0;}
+.admin-container{display:flex;min-height:100vh;}
+.sidebar{width:250px;background:#0b6623;color:#fff;padding:20px;box-shadow:2px 0 5px rgba(0,0,0,0.1);}
+.sidebar h2{text-align:center;margin-bottom:30px;}
+.sidebar ul{list-style:none;padding:0;}
+.sidebar ul li{margin:15px 0;}
+.sidebar ul li a{color:#fff;text-decoration:none;font-weight:bold;display:block;}
+.sidebar ul li a:hover{background:#094d1a;padding:5px;border-radius:5px;}
+.admin-main{flex:1;padding:20px;overflow:auto;}
+header{display:flex;justify-content:space-between;align-items:center;margin-bottom:20px;}
+header h1{color:#0b6623;}
+.stats span{margin-left:10px;font-weight:bold;}
+.admin-section{background:#fff;padding:15px;border-radius:8px;box-shadow:0 2px 5px rgba(0,0,0,0.1);margin-bottom:20px;}
+.admin-card{border:1px solid #ccc;padding:10px;margin:8px 0;border-radius:5px;background:#f9f9f9;display:flex;justify-content:space-between;align-items:center;}
+.admin-card button{margin-left:5px;padding:5px 10px;border:none;border-radius:5px;background:#0b6623;color:#fff;cursor:pointer;}
+.admin-card button:hover{background:#094d1a;}
+.hidden{display:none;}
+input{width:100%;padding:6px;margin:5px 0;border-radius:5px;border:1px solid #ccc;}
+.status-badge{padding:3px 8px;border-radius:5px;color:#fff;font-weight:bold;}
+.status-pending{background:#f39c12;}
+.status-approved{background:#27ae60;}
+.status-declined{background:#c0392b;}
+.status-accomplished{background:#2980b9;}
+
+
+
+/* REWARDS SECTION */
+#rewardsSection {
+  text-align: center;
+}
+
+.progress-bar {
+  width: 100%;
+  height: 20px;
+  background: #e0e0e0;
+  border-radius: 10px;
+  overflow: hidden;
+  margin-top: 10px;
+}
+
+#progressFill {
+  height: 100%;
+  width: 0%;
+  background: linear-gradient(90deg, #0b6623, #4CAF50);
+  transition: width 0.5s ease;
+}
+
+
+/* ================= USER PAGE CUSTOM STYLING ================= */
+.user-body {
+  font-family: "Arial", sans-serif;
+  background: linear-gradient(135deg, #d9f5dd, #eef9f0);
+  margin: 0;
+  padding: 0;
+}
+
+.user-dashboard {
+  max-width: 1100px;
+  margin: 30px auto;
+  padding: 20px;
+}
+
+.user-header {
+  background: #0b6623;
+  color: #fff;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 15px 25px;
+  border-radius: 12px;
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.15);
+}
+
+.user-header h1 {
+  font-size: 1.6rem;
+  margin: 0;
+   color: #fff;
+}
+
+.logout-btn {
+  background: #fff;
+  color: #0b6623;
+  border: none;
+  padding: 8px 8px;
+  border-radius: 6px;
+  font-weight: bold;
+  transition: 0.3s;
+}
+
+.logout-btn:hover {
+  background: #e3f6e5;
+  transform: scale(1.05);
+}
+
+/* CARD STYLE */
+.card {
+  background: #fff;
+  padding: 20px;
+  border-radius: 12px;
+  margin-top: 20px;
+  box-shadow: 0 4px 10px rgba(0,0,0,0.08);
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+.card:hover {
+  transform: translateY(-3px);
+  box-shadow: 0 6px 15px rgba(0,0,0,0.12);
+}
+
+/* PROFILE SECTION */
+.user-profile {
+  display: flex;
+  align-items: center;
+  gap: 20px;
+}
+
+.profile-img {
+  width: 130px;
+  height: 130px;
+  border-radius: 50%;
+  border: 4px solid #0b6623;
+  object-fit: cover;
+}
+
+.profile-right h2 {
+  color: #0b6623;
+  margin-bottom: 10px;
+}
+
+/* FORM */
+.form-row {
+  display: flex;
+  gap: 15px;
+  flex-wrap: wrap;
+}
+
+.form-row input,
+.form-row select {
+  flex: 1;
+  padding: 10px;
+  border-radius: 6px;
+  border: 1px solid #ccc;
+  font-size: 14px;
+}
+
+.primary-btn {
+  background: #0b6623;
+  color: white;
+  border: none;
+  border-radius: 6px;
+  padding: 10px 16px;
+  cursor: pointer;
+  transition: 0.3s;
+}
+
+.primary-btn:hover {
+  background: #094d1a;
+}
+
+/* REQUESTS BOX */
+.requests-box {
+  max-height: 250px;
+  overflow-y: auto;
+  border: 1px solid #e1e1e1;
+  padding: 10px;
+  border-radius: 6px;
+  background: #f9f9f9;
+}
+
+/* FEEDBACK */
+.feedback-card textarea {
+  width: 100%;
+  height: 100px;
+  border-radius: 6px;
+  border: 1px solid #ccc;
+  padding: 10px;
+  margin-bottom: 10px;
+  resize: none;
+}
+
+.feedback-card textarea:focus {
+  border-color: #0b6623;
+  outline: none;
+  box-shadow: 0 0 5px #0b6623;
+}
+
+/* RESPONSIVE */
+@media (max-width: 768px) {
+  .user-profile {
+    flex-direction: column;
+    text-align: center;
+  }
+  .form-row {
+    flex-direction: column;
+  }
+  .user-header h1 {
+    font-size: 1.2rem;
+  }
+}

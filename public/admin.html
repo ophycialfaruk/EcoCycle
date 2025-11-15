@@ -1,0 +1,68 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>EcoCycle - Admin Dashboard</title>
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<link rel="stylesheet" href="/style.css">
+</head>
+<body>
+<div class="admin-container">
+  <aside class="sidebar">
+    <h2>EcoCycle Admin</h2>
+    <ul>
+      <li><a href="#" onclick="showSection('users')">All Users</a></li>
+      <li><a href="#" onclick="showSection('requests')">Waste Requests</a></li>
+      <li><a href="#" onclick="showSection('feedback')">Feedback</a></li>
+    </ul>
+  </aside>
+
+  <main class="admin-main">
+    <header>
+      <h1>Dashboard</h1>
+      <div class="stats">
+        <span id="totalUsers">Users: 0</span>
+        <span id="totalRequests">Requests: 0</span>
+        <span id="pendingRequests">Pending: 0</span>
+        <span id="approvedRequests">Approved: 0</span>
+      </div>
+    </header>
+
+    <section id="usersSection" class="admin-section">
+      <h3>All Users</h3>
+      <input id="userSearch" placeholder="Search users by name/email" oninput="filterUsers()">
+      <div id="adminUsers">Loading...</div>
+    </section>
+
+    <section id="requestsSection" class="admin-section hidden">
+      <h3>Waste Requests</h3>
+      <input id="requestSearch" placeholder="Search requests by user or type" oninput="filterRequests()">
+      <div id="adminRequests">Loading...</div>
+    </section>
+
+<!-- Add this inside <main class="admin-main"> -->
+<div id="editUserModal" class="modal hidden">
+    <div class="modal-content">
+        <h3>Edit User</h3>
+        <label>Name: <input type="text" id="editName"></label>
+        <label>Email: <input type="email" id="editEmail" disabled></label>
+        <label>Contact: <input type="text" id="editContact"></label>
+        <label>Address: <input type="text" id="editAddress"></label>
+        <label>State: <input type="text" id="editState"></label>
+        <label>Country: <input type="text" id="editCountry"></label>
+        <div class="modal-buttons">
+            <button id="saveEditBtn">Save</button>
+            <button id="cancelEditBtn">Cancel</button>
+        </div>
+    </div>
+</div>
+
+    <section id="feedbackSection" class="admin-section hidden">
+      <h3>Feedback</h3>
+      <div id="adminFeedback">Loading...</div>
+    </section>
+  </main>
+</div>
+<script src="/app.js"></script>
+</body>
+</html>

@@ -1,0 +1,39 @@
+{
+  "users": {
+    "u2Z0GY": {
+      "id": "u2Z0GY",
+      "name": "Umar Faruk Nurudeen",
+      "email": "faruknurudeen87@gmail.com",
+      "password": "faruk",
+      "address": "rikkos Jos Plateau",
+      "state": "Plateau",
+      "country": "Nigeria",
+      "contact": "09039950410"
+    }
+  },
+  "requests": [
+    {
+      "id": "mvKCel",
+      "userId": "u2Z0GY",
+      "type": "paper",
+      "kg": 100,
+      "status": "approved",
+      "amount": 5000,
+      "date": "11/15/2025",
+      "accomplished": true
+    }
+  ],
+  "feedback": [
+    {
+      "id": "c7Uj5x",
+      "userId": "u2Z0GY",
+      "text": "hy",
+      "date": "11/15/2025",
+      "reply": "thanks"
+    }
+  ],
+  "admin": {
+    "email": "admin@ecocycle.com",
+    "password": "admin"
+  }
+}

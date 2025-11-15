@@ -1,0 +1,62 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>EcoCycle - User Dashboard</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <link rel="stylesheet" href="/style.css">
+</head>
+<body class="user-body">
+  <div class="user-dashboard">
+    <header class="user-header">
+      <h1>🌍 EcoCycle    - User Dashboard</h1>
+      <button id="logoutBtn" class="logout-btn">Logout</button>
+    </header>
+
+    <section class="user-profile card">
+      <div class="profile-left">
+        <img src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAJQAAACUCAMAAABC4vDmAAAAnFBMVEX///8NkRoAAAD///0AjQD39/cAiwAnJyefn5/h4eEPkBwAiQCQkJAYGBg2Njb6+vrr6+sAhQBXV1dISEgSEhLw+PDE4coAjQ9ztHbk8OVSo1F+u4EdHR33/ffNzc04mjutra282r5Bn0eXyJjc7N2XxpxerGJnrmifx6I4lj0qlCux1LSEhIR6enphYWFtq3HP49G+vr6Hvopubm4HDeA9AAAJsUlEQVR4nO1bi3aqOhDlEVGhFlE0KipipVq0vvr//3aTQEKABAWtp+su9uo5tkLCZjKZmUwmitKgQYMGDRo0aNCgQYP/F3T8T//XLHKIScX4e+z+BGKhjDbn4MPbrte+v15vvXB/3oziyzq95XV8yPPO4WlmGo4FACQAwHKMaHYKxzzvV5FCT9vsPx0HsVFNU+Vhqoib43zupy/Xr/E2skBMIsuJ/g0sf/JSeW1C1UEiugEIHTWcvoQQUu0wMm4ySnhZUTh6gaRGoWNB8zYfRssJR79KCL1y4Ft3E0pg+eNfZTX9dNBsE8gDAGAYAIgUDc1GZ/uLqrWPjPwTMR0zimbbiXf1TrMoMjG1PG/D35MOnqxdyDItPCcnCGg4vrcLNgvuvk2w83wrPxOgc1083zHqymadFRME8OtjM0r8cUKc/KKPzh9fMDeUxmz6XEHhR40zQ2dCy7yeec6xr0sfO76aFk/LBNH4uTGOrgRm+gRks0HEzGKre1n2RY2mHxHgDT40A9TR01jpyp5XEmipuxHV2uVQ0zT3TdRIGe1Mg5us0Ng/SVSkkz1knNAMhx6WUtz9UotxKDbE16deRrUgYfUEXqiXwODmuPEVcFeHCSltKWke+LwuGoHktqqklDGnT6ox4YPepUtJfUsaK4sJP/Lm+DlaNY3SsYPOPnNtRTlp7/IO9shZUlHD6CnGfTED6Yv6uRe9MFIDaQdI1H4qLDBbSO+8H9dUJ0CUN4D9OSXVkfeADK+ZunHj+jinvZN2N5vGz+DwlnAaCk0Vu306S1/NeVjZU4UyYUFOCPYxJtUt7UXH/TxPrT6ZQkF/KjR9l5/jsdMq7wW1m6Z6BT4f4xSkg+c8GKqNHWbcHxvAEX09U8UuIne1dTkMhgw/ndIhRK7KoqygP6odW+nKjk0aY1LoZTnQsmgXfU0GE6bs1kf9gG/kpO+2UHL9dLQi3kvnoP5FY2lo1F9MfMSCwqFKkH+zi4ATsgyl/QWARjJWWJcTMwem5eWv9YWcSm0oei2PRjL1zUJIgwNoFroQDR4RVYlxQHaBKpVp7WooFbZIKrUsxq5wPa/kDOVWdMfeU61MiWBMbRSZwVn0hzJSl9I+R8xBILNXPQrV9S1tL9DK7juea28uT+d4wP+vyrsNqZEB2zo2YUNfCmtUvgNCatBv86RWy5ukkFbRgJF4rYqUiAFO3ulaFLSIVOcOUrpypc7UKrqI20hd8bl4sSYphDFVilpuman5l+CinFSZoSL4YqpenRObe8ZHJVJtqadJcKVWwRGMwA2E1Hs6m3tJtYidmK/KOz47CSmjuqs5AamRkpGiZn64tEs6ZuEQnFTlNJol4SvwRHNETIotTX9KTKg+oa87qxoqbMzEdYKii5GTan3TPwZy1dolqW412lQ06meqUkAYukpIodUpNfKClEeCgJIC54qWiq2szI2opZSU0jrEX/5IOsaLQDqFqoXqeuqjIqGE5aTQNTKGsoSHoi+i1KdWkBTi4VFtjITjXkYKxRCdbyknxIM6VcOrREpRtgkpMBOG+KWkbLvMgOrKGtJAoZJOZRqKUC6pi+b+XOTE2At/1iVVsHCtVikpZDf77712iVIpzFCtK5L6Ssc929ImpPrvmqsdESliAVwXf3Ywo1bLtkmwJzOfqDPPeC4pRAmRQj8427Lstl13rmk9tzdHnx2lFaO7XB0P5M4WaVBCqgqkw4cEEf8oF7RKR6TmvR6SVM+du4RUTFrpKwnB+CPXOzd8NUllFN1mj0G0bExK6821y1Gba4SUTTRu+XMg1Ond+d65mV3NTn1yJoFDIgvyMEIKjV8bjWU7JbV8x1nZ5Eab3Gfbmb5ndWcfG/co05A8hOg6UR40fAiEVA+TwjZqhfgdlIykWn2b67qm8VRYGgG5mUV28uG3tuNfbCIprYdIuURSBDhhvMLCiSWEG2RGkHMzopi2DAHnkKXoEjvVSxKfjNShbJX8iEM+G3Qrv6SlkFT3VpCehC6qaVUKXZAybqiMQUkkXSC1Gg5jKcU6ZB+GgtzQjq7dKgd5KBymhmohbVgklSQ4+oM37PtaA0HCim2LVA+HUwsnXDhISF1i90KWNW/EGRW2bPQRG4PKCwduiSVfnhVILbFhUPo4tz5AM64rWpumC8rqS6wzayvftiiQ6hLRLIfzOPvZFfnl6x1vK0WanbqfFBo3okTdDglcLgJSerpsr5ELYgkOKM3qF03CUWtz1zuaW4iq0gSHOHwsB1vPiFJBMlI/6K8U39p71o7mUkHVwTZTREkzGSnkcDjbOchvbunKlAqqTtIMNWDbrFIfVSS1yoTBbe2YzyownwpOtTbe00RsJDFVRVLLTNbMLSxJM4nYysikrMX5BBGpjGXquwXbGYLYo5rQrLM7g1gx+ylI7ktI2XwSYZmznUSjElK190HSXVGjsA0iIaXwZRNFM5XuY9XfHWUJBVnupUhqqB1ZRNfJ7z8ELLdbf8MIb62piQoUt9bEpI6cFUBfM4K46SLdsXXqbq3pvKgEm5BCUuhXRupb0zL9bdNNSMnMuYsUt10LBbl4AalVOmStY7asg+0WPLRdq3C2SmhYBKQuqfXsI/0Sd2WNHyvPS0UuKAEQkOKsZ3/OzAOJr5lCGXVcMQ++WKLgA2NSLk8KffVGll82NqSUH7dR9JQaHK6sBOTLSlo4IaQNktogYpNQBNw+DgiG8VdJWQlgJViPl5XgHAnrDuRlhXe3511sCJDRjH1vZss0Vi8sJ6bk5jMKcPR8qVIG3TdSItG6vF2SeKA7fGdYJXc9v1SJL+pSIQnNqs0cfc9VQEsjjmrIlb/BU5U3JeVvaZWSCaOqCX1Jv7hQkGNl+ZUUNVMoCI0629kS7CEbAHyEIS6pvNEmLqmcgLQsGxmVOnG5rP9c8amhhrf9BPZSocnXU0JBZdFDrDJ6havzPm5awLhMV+V0/EnllBwrPzV/qkkKmsc6vRh/6Pwf4yu0+IJ6EzxJxzPYzHIV8gD61/FowfiwKmt9NL76EGTvtmbi6rlHgOf2VVQkP8kWyS82QTjxndcUyRNeez8nLHKaCB8nWJ8m3mSyXcfHCdQ88HGCXzuoMt3mhZUIAnEj5y7EV3/14IWC3difO6KiYNtjVTjMY6q/fpiH0vLvpQWN6CWUMKY7854DYsAxd9OXHChNHjE++RbNhxeGDANY/unXdamA6X7rOAaA+fN9WESG42z/waHDGJtwQo5nGvH5TGQXLAfg45nJ3snLaSUPxAdZQ287WyN8br1dQA+ysoOlDRKQQ9HKHzsbTSMERWmGq0GDBg0aNGjQoEGD/yn+A7YOsby0q7FwAAAAAElFTkSuQmCC" alt="Profile" class="profile-img">
+      </div>
+      <div class="profile-right">
+        <h2 id="userNameDisplay"></h2>
+        <p><strong>Email:</strong> <span id="userEmail"></span></p>
+        <p><strong>Address:</strong> <span id="userAddress"></span>, <span id="userState"></span>, <span id="userCountry"></span></p>
+        <p><strong>Contact:</strong> <span id="userContact"></span></p>
+      </div>
+    </section>
+
+    <section class="card">
+      <h3>♻️ Submit Waste Request</h3>
+      <div class="form-row">
+        <select id="wasteType">
+          <option value="plastics">Plastics</option>
+          <option value="paper">Paper</option>
+          <option value="glass">Glass</option>
+          <option value="organic">Organic</option>
+        </select>
+        <input type="number" id="wasteKg" placeholder="Enter weight (Kg)">
+        <button id="requestBtn" class="primary-btn">Submit</button>
+      </div>
+    </section>
+
+    <section class="card">
+      <h3>📦 Your Requests</h3>
+      <div id="requestsDiv" class="requests-box">Loading...</div>
+    </section>
+
+    <section class="card feedback-card">
+      <h3>💬 Submit Feedback</h3>
+      <textarea id="feedbackText" placeholder="Share your thoughts...add Your Email/Phone for reponds"></textarea>
+      <button id="feedbackBtn" class="primary-btn">Submit Feedback</button>
+    </section>
+	 
+	 <section class="card">
+  <h3>📬 Your Feedback & Admin Replies</h3>
+  <div id="userFeedbackDiv" class="feedback-box">Loading...</div>
+</section>
+
+  </div>
+
+  <script src="/app.js"></script>
+</body>
+</html>
